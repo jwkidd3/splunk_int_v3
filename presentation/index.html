@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splunk Intermediate Course</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal pre {
+            width: 100%;
+            font-size: 0.55em;
+        }
+        .reveal code {
+            background: #3f3f3f;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .fragment.highlight-current-green.visible.current-fragment {
+            color: #17ff2e;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title Slide -->
+            <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
+                <h1>Splunk Intermediate</h1>
+                <h3>Advanced Searching, Dashboards & Data Models</h3>
+                <p style="margin-top: 50px;">2-Day Training Course</p>
+            </section>
+
+            <!-- Course Overview -->
+            <section>
+                <h2>Course Overview</h2>
+                <div class="two-column">
+                    <div>
+                        <h3>Day 1</h3>
+                        <ul>
+                            <li>Advanced Search Commands</li>
+                            <li>Statistical Commands</li>
+                            <li>Field Extractions</li>
+                            <li>Lookups & Enrichment</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Day 2</h3>
+                        <ul>
+                            <li>Reports & Visualizations</li>
+                            <li>Interactive Dashboards</li>
+                            <li>Alerts & Schedules</li>
+                            <li>Data Models & Pivot</li>
+                            <li>Advanced Dashboard Techniques</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Module 1: Advanced Search Commands -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 1</h2>
+                <h3>Advanced Search Commands</h3>
+            </section>
+
+            <section>
+                <h3>Subsearches</h3>
+                <p>Use the results of one search to filter another</p>
+                <pre><code class="language-spl">index=training sourcetype=web_access
+    [search index=training sourcetype=security_events
+     event_type="login_failure"
+    | stats count by user
+    | return 100 user]
+| stats count by user, status</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Key Points:</strong></p>
+                    <ul>
+                        <li>Runs inner search first</li>
+                        <li>Limited to 50,000 results</li>
+                        <li>Use <code>return</code> to control output</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h3>Transaction Command</h3>
+                <p>Group related events into transactions</p>
+                <pre><code class="language-spl">index=training sourcetype=web_access user!="-"
+| transaction user clientip maxpause=30m
+| table user, clientip, duration, eventcount</code></pre>
+                <div class="two-column">
+                    <div>
+                        <h4>Options</h4>
+                        <ul>
+                            <li><code>maxpause</code> - Max time between events</li>
+                            <li><code>maxspan</code> - Max transaction duration</li>
+                            <li><code>startswith/endswith</code> - Define boundaries</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Use Cases</h4>
+                        <ul>
+                            <li>User sessions</li>
+                            <li>Application workflows</li>
+                            <li>Multi-step processes</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Multisearch Command</h3>
+                <p>Run multiple searches in parallel</p>
+                <pre><code class="language-spl">| multisearch
+    [search index=training sourcetype=web_access
+     | eval source="Web"]
+    [search index=training sourcetype=application
+     | eval source="App"]
+| stats count by source</code></pre>
+                <p><strong>Benefit:</strong> Faster than separate searches + append</p>
+            </section>
+
+            <section>
+                <h3>Lab 1</h3>
+                <h4>Advanced Search Commands</h4>
+                <ul>
+                    <li>Create subsearches to filter data</li>
+                    <li>Group events into transactions</li>
+                    <li>Compare data with multisearch</li>
+                    <li>Build complex analytical queries</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 30 minutes</em></p>
+            </section>
+
+            <!-- Module 2: Statistical Commands -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 2</h2>
+                <h3>Statistical Commands & Transformations</h3>
+            </section>
+
+            <section>
+                <h3>Stats Command</h3>
+                <p>Most flexible aggregation command</p>
+                <pre><code class="language-spl">index=training sourcetype=web_access
+| stats count as requests,
+        dc(clientip) as unique_ips,
+        avg(response_time) as avg_rt,
+        perc95(response_time) as p95_rt
+        by method, status</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Common Functions:</strong></p>
+                    <code>count, sum, avg, min, max, dc, values, list, perc##, stdev</code>
+                </div>
+            </section>
+
+            <section>
+                <h3>Chart vs. Timechart</h3>
+                <div class="two-column">
+                    <div>
+                        <h4>Chart</h4>
+                        <pre><code class="language-spl">| chart count
+  over url
+  by status</code></pre>
+                        <p>Two-dimensional aggregation (pivot table)</p>
+                    </div>
+                    <div>
+                        <h4>Timechart</h4>
+                        <pre><code class="language-spl">| timechart
+  span=1h
+  count
+  by status</code></pre>
+                        <p>Time-series specific aggregation</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Eval Command</h3>
+                <p>Transform and calculate fields</p>
+                <pre><code class="language-spl">index=training sourcetype=web_access
+| eval performance_score = case(
+    response_time < 100 AND status < 400, 100,
+    response_time < 500 AND status < 400, 75,
+    response_time < 1000 AND status < 400, 50,
+    status >= 400, 0,
+    1=1, 25
+)
+| stats avg(performance_score) by user</code></pre>
+                <div class="two-column">
+                    <div>
+                        <h4>String Functions</h4>
+                        <p><code>len, lower, upper, substr, replace</code></p>
+                    </div>
+                    <div>
+                        <h4>Math Functions</h4>
+                        <p><code>round, ceil, floor, abs, sqrt</code></p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Lab 2</h3>
+                <h4>Statistical Commands & Transformations</h4>
+                <ul>
+                    <li>Aggregate data with stats, chart, timechart</li>
+                    <li>Calculate percentiles and distributions</li>
+                    <li>Use eval for data transformation</li>
+                    <li>Build comprehensive analysis queries</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Module 3: Field Extractions -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 3</h2>
+                <h3>Fields & Field Extractions</h3>
+            </section>
+
+            <section>
+                <h3>Field Extraction Methods</h3>
+                <div class="two-column">
+                    <div class="highlight-box">
+                        <h4>Automatic</h4>
+                        <ul>
+                            <li>Key-value pairs</li>
+                            <li>JSON</li>
+                            <li>XML</li>
+                            <li>CSV</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box">
+                        <h4>Manual</h4>
+                        <ul>
+                            <li>Rex command (inline)</li>
+                            <li>Field Extractor UI</li>
+                            <li>props.conf (persistent)</li>
+                            <li>Calculated fields</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Rex Command</h3>
+                <p>Extract fields using regular expressions</p>
+                <pre><code class="language-spl">index=training sourcetype=application
+| rex field=message "order #(?&lt;order_id&gt;\d+)"
+| rex field=message "(?&lt;action&gt;created|shipped|delivered)"
+| stats count by order_id, action</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Regex Groups:</strong></p>
+                    <code>(?&lt;field_name&gt;pattern)</code> - Named capture group
+                </div>
+            </section>
+
+            <section>
+                <h3>Calculated Fields</h3>
+                <p>Create persistent derived fields</p>
+                <div class="highlight-box">
+                    <h4>Settings → Fields → Calculated Fields</h4>
+                    <p><strong>Example:</strong> status_category</p>
+                    <pre><code class="language-spl">case(
+    status < 300, "Success",
+    status < 400, "Redirect",
+    status < 500, "Client Error",
+    status >= 500, "Server Error"
+)</code></pre>
+                </div>
+                <p><strong>Benefit:</strong> Available automatically in all searches</p>
+            </section>
+
+            <section>
+                <h3>Lab 3</h3>
+                <h4>Field Extractions</h4>
+                <ul>
+                    <li>Use rex for inline extractions</li>
+                    <li>Create persistent field extractions</li>
+                    <li>Build calculated fields</li>
+                    <li>Create field aliases</li>
+                    <li>Optimize extraction performance</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Module 4: Lookups -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 4</h2>
+                <h3>Lookups & Data Enrichment</h3>
+            </section>
+
+            <section>
+                <h3>Lookup Types</h3>
+                <div class="two-column">
+                    <div class="highlight-box">
+                        <h4>CSV Lookups</h4>
+                        <ul>
+                            <li>Static files</li>
+                            <li>Good for small datasets</li>
+                            <li>Easy to manage</li>
+                            <li>< 1GB recommended</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box">
+                        <h4>KV Store</h4>
+                        <ul>
+                            <li>MongoDB-based</li>
+                            <li>Large datasets</li>
+                            <li>REST API access</li>
+                            <li>> 100K rows</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Using Lookups</h3>
+                <pre><code class="language-spl">index=training sourcetype=web_access user!="-"
+| lookup users.csv username as user
+  OUTPUT department, city, role
+| stats count by department, role</code></pre>
+                <div class="highlight-box">
+                    <h4>Automatic Lookups</h4>
+                    <p>Configure lookups to run automatically</p>
+                    <p><strong>Settings → Lookups → Automatic lookups</strong></p>
+                    <p>No need for <code>| lookup</code> command!</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Inputlookup & Outputlookup</h3>
+                <div class="two-column">
+                    <div>
+                        <h4>Inputlookup</h4>
+                        <pre><code class="language-spl">| inputlookup users.csv
+| table username,
+        department</code></pre>
+                        <p>Read lookup table</p>
+                    </div>
+                    <div>
+                        <h4>Outputlookup</h4>
+                        <pre><code class="language-spl">index=training
+| stats count by user
+| outputlookup
+  user_stats.csv</code></pre>
+                        <p>Write to lookup table</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Lab 4</h3>
+                <h4>Lookups & Data Enrichment</h4>
+                <ul>
+                    <li>Create and upload CSV lookups</li>
+                    <li>Configure automatic lookups</li>
+                    <li>Use inputlookup and outputlookup</li>
+                    <li>Enrich data from multiple sources</li>
+                    <li>Build dynamic lookup tables</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Day 2 Transition -->
+            <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
+                <h1>Day 2</h1>
+                <h3>Reports, Dashboards & Data Models</h3>
+            </section>
+
+            <!-- Module 5: Reports -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 5</h2>
+                <h3>Reports & Visualizations</h3>
+            </section>
+
+            <section>
+                <h3>Choosing Visualizations</h3>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Best Visualization</th>
+                    </tr>
+                    <tr>
+                        <td>Time series trends</td>
+                        <td>Line Chart, Area Chart</td>
+                    </tr>
+                    <tr>
+                        <td>Category comparison</td>
+                        <td>Column Chart, Bar Chart</td>
+                    </tr>
+                    <tr>
+                        <td>Composition</td>
+                        <td>Pie Chart (< 7 slices)</td>
+                    </tr>
+                    <tr>
+                        <td>KPIs</td>
+                        <td>Single Value, Gauge</td>
+                    </tr>
+                    <tr>
+                        <td>Correlation</td>
+                        <td>Scatter Plot</td>
+                    </tr>
+                    <tr>
+                        <td>Detailed data</td>
+                        <td>Table</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h3>Scheduled Reports</h3>
+                <div class="highlight-box">
+                    <h4>Configure Scheduling</h4>
+                    <ol>
+                        <li>Save search as Report</li>
+                        <li>Edit → Edit Schedule</li>
+                        <li>Set schedule (cron or UI)</li>
+                        <li>Add actions (email, webhook, etc.)</li>
+                    </ol>
+                </div>
+                <pre><code class="language-spl"># Example: Daily summary at 8 AM
+Schedule: Daily at 8:00 AM
+Time Range: Previous day (-1d@d to @d)
+Action: Send email with PDF attachment</code></pre>
+            </section>
+
+            <section>
+                <h3>Lab 5</h3>
+                <h4>Reports & Visualizations</h4>
+                <ul>
+                    <li>Create various visualization types</li>
+                    <li>Format and customize reports</li>
+                    <li>Schedule reports for delivery</li>
+                    <li>Build executive summary reports</li>
+                    <li>Optimize report performance</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Module 6: Dashboards -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 6</h2>
+                <h3>Interactive Dashboards</h3>
+            </section>
+
+            <section>
+                <h3>Dashboard Inputs</h3>
+                <div class="two-column">
+                    <div>
+                        <h4>Input Types</h4>
+                        <ul>
+                            <li>Time picker</li>
+                            <li>Dropdown</li>
+                            <li>Multiselect</li>
+                            <li>Text input</li>
+                            <li>Radio buttons</li>
+                            <li>Checkbox</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Tokens</h4>
+                        <pre><code class="language-spl">index=training
+  user=$user_token$
+| stats count</code></pre>
+                        <p>Use <code>$token_name$</code> in searches</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Drilldowns</h3>
+                <p>Enable interactive exploration</p>
+                <div class="highlight-box">
+                    <h4>Drilldown Options</h4>
+                    <ul>
+                        <li>Link to search</li>
+                        <li>Link to another dashboard</li>
+                        <li>Set token values</li>
+                        <li>Run custom actions</li>
+                    </ul>
+                </div>
+                <pre><code class="language-spl"># Click on table row to filter other panels
+Drilldown: Set token "selected_user" to $row.user$</code></pre>
+            </section>
+
+            <section>
+                <h3>Dashboard Best Practices</h3>
+                <div class="two-column">
+                    <div class="highlight-box">
+                        <h4>Design</h4>
+                        <ul>
+                            <li>6-10 panels max</li>
+                            <li>Logical grouping</li>
+                            <li>Consistent colors</li>
+                            <li>Clear titles</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box">
+                        <h4>Performance</h4>
+                        <ul>
+                            <li>Use base searches</li>
+                            <li>Limit time ranges</li>
+                            <li>Appropriate refresh</li>
+                            <li>Optimize queries</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Lab 6</h3>
+                <h4>Interactive Dashboards</h4>
+                <ul>
+                    <li>Create dashboards with multiple panels</li>
+                    <li>Add interactive inputs</li>
+                    <li>Implement token-based filtering</li>
+                    <li>Configure drilldowns</li>
+                    <li>Build professional layouts</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Module 7: Alerts -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 7</h2>
+                <h3>Alerts & Scheduled Searches</h3>
+            </section>
+
+            <section>
+                <h3>Alert Types</h3>
+                <div class="two-column">
+                    <div class="highlight-box">
+                        <h4>Scheduled</h4>
+                        <p>Run on a schedule (cron)</p>
+                        <p><strong>Use for:</strong></p>
+                        <ul>
+                            <li>Batch analysis</li>
+                            <li>Trend detection</li>
+                            <li>SLA monitoring</li>
+                        </ul>
+                    </div>
+                    <div class="highlight-box">
+                        <h4>Real-time</h4>
+                        <p>Continuous monitoring</p>
+                        <p><strong>Use for:</strong></p>
+                        <ul>
+                            <li>Security threats</li>
+                            <li>Critical errors</li>
+                            <li>Immediate response</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Alert Actions</h3>
+                <ul style="font-size: 0.9em;">
+                    <li><strong>Email</strong> - Send notification to users</li>
+                    <li><strong>Webhook</strong> - Integrate with external systems</li>
+                    <li><strong>Run a script</strong> - Execute custom automation</li>
+                    <li><strong>Log event</strong> - Create searchable audit trail</li>
+                    <li><strong>Add to triggered alerts</strong> - UI management</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Alert Throttling</h3>
+                <p>Prevent alert fatigue</p>
+                <div class="highlight-box">
+                    <h4>Throttling Options</h4>
+                    <ul>
+                        <li><strong>Time-based:</strong> Suppress for N minutes/hours</li>
+                        <li><strong>Field-based:</strong> Throttle per field value</li>
+                        <li><strong>Custom:</strong> Implement in search logic</li>
+                    </ul>
+                </div>
+                <pre><code class="language-spl">Suppress triggering for: 1 hour
+Throttle by fields: user, host</code></pre>
+            </section>
+
+            <section>
+                <h3>Lab 7</h3>
+                <h4>Alerts & Scheduled Searches</h4>
+                <ul>
+                    <li>Create scheduled and real-time alerts</li>
+                    <li>Configure alert triggers</li>
+                    <li>Set up email and webhook actions</li>
+                    <li>Implement throttling</li>
+                    <li>Monitor alert performance</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 30 minutes</em></p>
+            </section>
+
+            <!-- Module 8: Data Models -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 8</h2>
+                <h3>Data Models & Pivot</h3>
+            </section>
+
+            <section>
+                <h3>What are Data Models?</h3>
+                <div class="highlight-box">
+                    <p><strong>Hierarchical structures representing your data</strong></p>
+                    <ul>
+                        <li><strong>Objects:</strong> Datasets (tables)</li>
+                        <li><strong>Fields:</strong> Attributes (columns)</li>
+                        <li><strong>Relationships:</strong> Parent-child links</li>
+                        <li><strong>Constraints:</strong> Filters defining scope</li>
+                    </ul>
+                </div>
+                <p><strong>Benefits:</strong> Standardization, Performance, User-friendly access</p>
+            </section>
+
+            <section>
+                <h3>Pivot Interface</h3>
+                <p>Point-and-click data analysis (no SPL required)</p>
+                <div class="two-column">
+                    <div>
+                        <h4>Configure</h4>
+                        <ul>
+                            <li>Split Rows</li>
+                            <li>Split Columns</li>
+                            <li>Values (metrics)</li>
+                            <li>Filters</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Output</h4>
+                        <ul>
+                            <li>Tables</li>
+                            <li>Charts</li>
+                            <li>Statistics</li>
+                            <li>Trends</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Data Model Acceleration</h3>
+                <div class="highlight-box">
+                    <h4>What is Acceleration?</h4>
+                    <p>Pre-computed summary tables for instant results</p>
+                    <ul>
+                        <li>Dramatically faster searches</li>
+                        <li>Enable tstats command</li>
+                        <li>Trade storage for speed</li>
+                    </ul>
+                </div>
+                <pre><code class="language-spl">| tstats count from datamodel=Web_Traffic
+  by Web_Access.method, Web_Access.status
+| rename Web_Access.* as *</code></pre>
+            </section>
+
+            <section>
+                <h3>Lab 8</h3>
+                <h4>Data Models & Pivot</h4>
+                <ul>
+                    <li>Create data models with objects</li>
+                    <li>Add calculated fields and lookups</li>
+                    <li>Use Pivot for analysis</li>
+                    <li>Enable and configure acceleration</li>
+                    <li>Use tstats for high-performance searches</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Module 9: Advanced Dashboards -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 9</h2>
+                <h3>Advanced Dashboard Techniques</h3>
+            </section>
+
+            <section>
+                <h3>Simple XML</h3>
+                <p>Dashboard source code for advanced customization</p>
+                <pre><code class="language-xml">&lt;dashboard&gt;
+  &lt;label&gt;Dashboard Title&lt;/label&gt;
+  &lt;row&gt;
+    &lt;panel&gt;
+      &lt;title&gt;Panel Title&lt;/title&gt;
+      &lt;search&gt;
+        &lt;query&gt;index=training | stats count&lt;/query&gt;
+      &lt;/search&gt;
+      &lt;option name="charting.chart"&gt;line&lt;/option&gt;
+    &lt;/panel&gt;
+  &lt;/row&gt;
+&lt;/dashboard&gt;</code></pre>
+            </section>
+
+            <section>
+                <h3>Base Searches</h3>
+                <p>Share search results across panels</p>
+                <pre><code class="language-xml">&lt;search id="base_search"&gt;
+  &lt;query&gt;index=training sourcetype=web_access&lt;/query&gt;
+&lt;/search&gt;
+
+&lt;panel&gt;
+  &lt;search base="base_search"&gt;
+    &lt;query&gt;| stats count by status&lt;/query&gt;
+  &lt;/search&gt;
+&lt;/panel&gt;
+
+&lt;panel&gt;
+  &lt;search base="base_search"&gt;
+    &lt;query&gt;| stats count by method&lt;/query&gt;
+  &lt;/search&gt;
+&lt;/panel&gt;</code></pre>
+                <p><strong>Benefit:</strong> Run base search once, use multiple times</p>
+            </section>
+
+            <section>
+                <h3>Form Dashboards</h3>
+                <div class="highlight-box">
+                    <h4>Features</h4>
+                    <ul>
+                        <li>Submit button control</li>
+                        <li>Prevent automatic search execution</li>
+                        <li>Better for complex inputs</li>
+                        <li>Improved user control</li>
+                    </ul>
+                </div>
+                <pre><code class="language-xml">&lt;form version="1.1"&gt;
+  &lt;fieldset submitButton="true" autoRun="false"&gt;
+    &lt;!-- Inputs here --&gt;
+  &lt;/fieldset&gt;
+  &lt;!-- Panels here --&gt;
+&lt;/form&gt;</code></pre>
+            </section>
+
+            <section>
+                <h3>Lab 9</h3>
+                <h4>Advanced Dashboard Techniques</h4>
+                <ul>
+                    <li>Edit Simple XML directly</li>
+                    <li>Implement advanced drilldowns</li>
+                    <li>Use base searches for performance</li>
+                    <li>Create form-based dashboards</li>
+                    <li>Apply custom styling with HTML/CSS</li>
+                </ul>
+                <p style="margin-top: 40px;"><em>Duration: 45 minutes</em></p>
+            </section>
+
+            <!-- Course Summary -->
+            <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
+                <h2>Course Summary</h2>
+                <div class="two-column" style="font-size: 0.8em;">
+                    <div>
+                        <h3>Skills Gained</h3>
+                        <ul>
+                            <li>Advanced SPL commands</li>
+                            <li>Statistical analysis</li>
+                            <li>Field extraction techniques</li>
+                            <li>Data enrichment with lookups</li>
+                            <li>Report creation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Skills Gained (cont.)</h3>
+                        <ul>
+                            <li>Interactive dashboards</li>
+                            <li>Alert configuration</li>
+                            <li>Data modeling</li>
+                            <li>Performance optimization</li>
+                            <li>XML customization</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Next Steps</h2>
+                <div class="highlight-box">
+                    <h3>Continue Your Learning</h3>
+                    <ul>
+                        <li>Practice with your own data</li>
+                        <li>Explore Splunk documentation</li>
+                        <li>Join Splunk community forums</li>
+                        <li>Consider Splunk certification</li>
+                        <li>Build real-world use cases</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Q&A -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h1>Questions?</h1>
+                <p style="margin-top: 100px;">Thank you for attending!</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/notes/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
