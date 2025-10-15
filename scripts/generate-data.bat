@@ -13,9 +13,9 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-echo Running data generation script...
+echo Running Buttercup Games data generation script...
 echo.
-python "%~dp0data-generators\generate_sample_data.py"
+python "%~dp0data-generators\generate_buttercup_data.py"
 
 echo.
 echo ================================================

@@ -1,15 +1,16 @@
 # Splunk Intermediate Training Course v3
 
-A comprehensive 2-day intermediate-level Splunk training program covering advanced search techniques, data modeling, dashboards, and alerts.
+A comprehensive 2-day intermediate-level Splunk training program covering advanced search techniques, data modeling, visualizations, and knowledge object management using the **Buttercup Games** e-commerce scenario.
 
 ## Course Overview
 
 This repository contains all materials needed to deliver or take a 2-day Splunk intermediate training course, including:
-- 9 hands-on lab exercises
+- **12 hands-on lab exercises** in Markdown format
 - Interactive reveal.js presentation
-- Sample data generation scripts
+- **Buttercup Games data generation scripts** (~27,000 events)
 - Dockerized Splunk environment
 - Complete course outline and documentation
+- **4 dedicated Splunk indexes** (web, security, network, games)
 
 ### Target Audience
 - Splunk users with basic SPL knowledge
@@ -17,16 +18,22 @@ This repository contains all materials needed to deliver or take a 2-day Splunk 
 - IT professionals wanting to advance their Splunk skills
 
 ### What You'll Learn
-- Advanced SPL commands (subsearches, transaction, multisearch)
-- Statistical analysis and transformations
-- Field extraction techniques
-- Data enrichment with lookups
-- Report and dashboard creation
-- Alert configuration and management
-- Data models and Pivot interface
-- Advanced dashboard customization with Simple XML
+- Advanced search techniques (Job Inspector, search modes, case sensitivity)
+- Transforming commands for visualizations (chart, timechart, trellis layouts)
+- Geographic visualizations and trendlines
+- Data manipulation with eval functions
+- Event correlation with transaction command
+- Creating and managing lookups
+- Field extraction (regex and delimiter methods)
+- Field aliases and calculated fields
+- Tags, event types, and search macros
+- Workflow actions for external integrations
+- Building and accelerating data models
+- Using the Pivot interface for data model reporting
 
 ## Quick Start
+
+**For complete setup instructions**, see `QUICK_START.md` or `DATA_LOADING_GUIDE.md`
 
 ### 1. Start Splunk Environment
 
@@ -34,142 +41,147 @@ This repository contains all materials needed to deliver or take a 2-day Splunk 
 # Windows
 scripts\start-splunk.bat
 
-# After container starts, access Splunk at:
-# http://localhost:8000
-# Username: admin
-# Password: password
+# Access Splunk at: http://localhost:8000
+# Username: admin  |  Password: password
 ```
 
-### 2. Generate Sample Data
+### 2. Generate Buttercup Games Data
 
 ```bash
 # Windows
 scripts\generate-data.bat
 
 # Or directly with Python
-python scripts/data-generators/generate_sample_data.py
+python scripts/data-generators/generate_buttercup_data.py
 ```
 
-### 3. Upload Data to Splunk
+This creates ~27,000 events across multiple data sources in the `data/` directory.
 
-1. Log in to Splunk (http://localhost:8000)
-2. Create a new index called `training`
-3. Upload data files from the `data/` directory
-4. Set sourcetype appropriately:
-   - `web_access.log` → sourcetype: `web_access`
-   - `application.log` → sourcetype: `application`
-   - `security_events.log` → sourcetype: `security_events`
+### 3. Create 4 Indexes in Splunk
 
-### 4. View Presentation
+In Splunk Web UI: **Settings** → **Indexes** → **New Index**
 
-```bash
-cd presentation
-python -m http.server 8080
+Create these indexes:
+- **web** - Online store and vendor sales
+- **security** - Authentication events
+- **network** - Proxy logs
+- **games** - Game telemetry
 
-# Open browser to http://localhost:8080
-```
+### 4. Upload Data to Indexes
+
+Upload each file to its designated index:
+
+| File | Sourcetype | Index |
+|------|------------|-------|
+| web_access.log | access_combined_wcookie | **web** |
+| vendor_sales.csv | vendor_sales | **web** |
+| linux_secure.log | linux_secure | **security** |
+| cisco_wsa_squid.log | cisco_wsa_squid | **network** |
+| simcube_beta.csv | SimCubeBeta | **games** |
+
+**Detailed upload instructions**: See `DATA_LOADING_GUIDE.md`
+
+### 5. Upload Lookup Files
+
+**Settings** → **Lookups** → **Lookup table files** → Upload:
+- `http_status_lookup.csv`
+- `product_catalog.csv`
+
+### 6. Start Lab 1
+
+Open `labs/lab01_beyond_search_fundamentals.md` and begin!
 
 ## Course Structure
 
-### Day 1: Advanced Searching and Data Analysis
+### Day 1: Search Fundamentals and Data Analysis (6 labs)
 
-#### Module 1: Advanced Search Commands (1 hour)
-- Subsearches and their use cases
-- Transaction command for event grouping
-- Multisearch for combining searches
-- **Lab 1**: Advanced Search Commands (30 minutes)
+#### Lab 1: Beyond Search Fundamentals (30 min)
+- Search fundamentals review, Job Inspector, search modes, table command
 
-#### Module 2: Statistical Commands and Transformations (1.5 hours)
-- Stats, chart, and timechart commands
-- Eval expressions and functions
-- Statistical functions and aggregations
-- **Lab 2**: Statistical Commands and Transformations (45 minutes)
+#### Lab 2: Transforming Commands for Visualizations (45 min)
+- Chart, timechart, dashboards, trellis layouts
 
-#### Module 3: Working with Fields and Field Extractions (1.5 hours)
-- Understanding field extractions
-- Rex command for inline extraction
-- Creating custom field extractions
-- Calculated fields and aliases
-- **Lab 3**: Working with Fields and Field Extractions (45 minutes)
+#### Lab 3: Trendlines, Mapping, and Single Value (45 min)
+- Trendlines, single value KPIs, geographic visualizations, choropleth maps
 
-#### Module 4: Lookups and Data Enrichment (1.5 hours)
-- Creating and managing CSV lookups
-- Automatic lookups
-- KV Store lookups
-- Data enrichment strategies
-- **Lab 4**: Lookups and Data Enrichment (45 minutes)
+#### Lab 4: Filtering and Manipulating Data (45 min)
+- Eval functions, case/if logic, data transformation
 
-### Day 2: Reports, Dashboards, and Alerts
+#### Lab 5: Correlating Events (30 min)
+- Transaction command, session tracking, event correlation
 
-#### Module 5: Creating Reports and Visualizations (1.5 hours)
-- Building effective reports
-- Visualization types and best practices
-- Formatting and customizing reports
-- Scheduling reports
-- **Lab 5**: Creating Reports and Visualizations (45 minutes)
+#### Lab 6: Introduction to Lookups (45 min)
+- Creating lookups, automatic lookups, inputlookup/outputlookup
 
-#### Module 6: Building Interactive Dashboards (1.5 hours)
-- Dashboard editor overview
-- Adding panels and visualizations
-- Dashboard inputs and tokens
-- Drilldowns and navigation
-- **Lab 6**: Building Interactive Dashboards (45 minutes)
+### Day 2: Knowledge Objects and Data Models (6 labs)
 
-#### Module 7: Alerts and Scheduled Searches (1 hour)
-- Creating real-time and scheduled alerts
-- Alert actions and triggers
-- Throttling and alert management
-- **Lab 7**: Alerts and Scheduled Searches (30 minutes)
+#### Lab 7: Creating and Managing Fields (45 min)
+- Field Extractor UI, regex and delimiter extraction
 
-#### Module 8: Data Models and Pivot (1.5 hours)
-- Understanding data models
-- Creating data models
-- Using the Pivot interface
-- Accelerating data models
-- **Lab 8**: Data Models and Pivot (45 minutes)
+#### Lab 8: Field Aliases and Calculated Fields (45 min)
+- Username normalization, unit conversion, calculated fields
 
-#### Module 9: Advanced Dashboard Techniques (1.5 hours)
-- Simple XML customization
-- Base searches for performance
-- Form-based dashboards
-- Advanced token manipulation
-- **Lab 9**: Advanced Dashboard Techniques (45 minutes)
+#### Lab 9: Tags and Event Types (45 min)
+- Creating tags, defining event types, use cases
+
+#### Lab 10: Creating and Using Macros (45 min)
+- Search macros, arguments, validation
+
+#### Lab 11: Workflow Actions (30 min)
+- GET/POST/Search workflows, external integrations
+
+#### Lab 12: Creating Data Models (60 min)
+- Data model structure, Pivot interface, acceleration
+
+**Total Duration**: 2 days (~8.5 hours of hands-on labs)
 
 ## Repository Structure
 
 ```
 splunk_int_v3/
-├── data/                           # Generated sample data files
-│   ├── web_access.log
-│   ├── application.log
-│   ├── security_events.log
-│   ├── products.csv
-│   ├── users.csv
-│   └── threat_intel.csv
-├── labs/                           # Lab exercises (Markdown)
-│   ├── lab01_advanced_search_commands.md
-│   ├── lab02_statistical_commands.md
-│   ├── lab03_field_extractions.md
-│   ├── lab04_lookups_data_enrichment.md
-│   ├── lab05_reports_visualizations.md
-│   ├── lab06_interactive_dashboards.md
-│   ├── lab07_alerts_scheduled_searches.md
-│   ├── lab08_data_models_pivot.md
-│   └── lab09_advanced_dashboard_techniques.md
-├── presentation/                   # reveal.js presentation
+├── data/                                      # Generated Buttercup Games data
+│   ├── web_access.log                         # 15,000 events → index=web
+│   ├── vendor_sales.csv                       # 5,000 records → index=web
+│   ├── linux_secure.log                       # 2,000 events → index=security
+│   ├── cisco_wsa_squid.log                    # 3,000 events → index=network
+│   ├── simcube_beta.csv                       # 2,000 events → index=games
+│   ├── http_status_lookup.csv                 # Lookup table
+│   └── product_catalog.csv                    # Lookup table
+├── labs/                                      # 12 Lab exercises (Markdown)
+│   ├── lab01_beyond_search_fundamentals.md
+│   ├── lab02_transforming_commands_visualizations.md
+│   ├── lab03_trendlines_mapping_single_value.md
+│   ├── lab04_filtering_manipulating_data.md
+│   ├── lab05_correlating_events.md
+│   ├── lab06_introduction_to_lookups.md
+│   ├── lab07_creating_managing_fields.md
+│   ├── lab08_field_aliases_calculated_fields.md
+│   ├── lab09_tags_event_types.md
+│   ├── lab10_creating_using_macros.md
+│   ├── lab11_workflow_actions.md
+│   └── lab12_creating_data_models.md
+├── old labs/                                  # Original PDF lab files (reference)
+├── presentation/                              # reveal.js presentation
 │   ├── index.html
 │   └── README.md
-├── scripts/                        # Utility scripts
+├── scripts/                                   # Utility scripts
 │   ├── data-generators/
-│   │   └── generate_sample_data.py
+│   │   ├── generate_buttercup_data.py        # Buttercup Games data generator
+│   │   └── generate_sample_data.py           # (old, not used)
 │   ├── cleanup-splunk.bat
 │   ├── generate-data.bat
 │   ├── start-splunk.bat
 │   ├── stop-splunk.bat
 │   └── update_course.bat
-├── outline.md                      # Course outline
-├── README.md                       # This file
-└── CLAUDE.md                       # Documentation for Claude Code
+├── CLAUDE.md                                  # Documentation for Claude Code
+├── COURSE_UPDATE_SUMMARY.md                   # Complete course update summary
+├── DATA_LOADING_GUIDE.md                      # Detailed data loading instructions
+├── LAB_UPDATE_GUIDE.md                        # Lab specifications
+├── PRESENTATION_UPDATE_NOTES.md               # Presentation update guide
+├── QUICK_REFERENCE.md                         # SPL command reference
+├── QUICK_START.md                             # 5-step quick start guide
+├── README.md                                  # This file
+└── outline.md                                 # Complete 2-day course outline
 ```
 
 ## Prerequisites
@@ -185,29 +197,32 @@ splunk_int_v3/
 - Familiarity with Splunk web interface
 - Basic command line skills
 
-## Sample Data
+## Buttercup Games Scenario
 
-The data generation script creates realistic training data:
+**Company**: Buttercup Games - E-commerce and retail gaming company
 
-### Web Access Logs (10,000 events)
-- HTTP requests with methods, URLs, status codes
-- Response times and bytes transferred
-- User and IP information
+All labs use realistic data from Buttercup Games operations:
 
-### Application Logs (5,000 events)
-- JSON-formatted application events
-- Multiple components (AuthService, PaymentService, etc.)
-- Error levels and session tracking
+### index=web (~20,000 events)
+- **Web Access Logs**: Online store activity with session tracking (JSESSIONID)
+  - Product views, cart actions, purchases
+  - Products: Mediocre Kingdoms, Grand Theft Scooter, Halo, FIFA, etc.
+- **Vendor Sales**: Retail store sales across regions
+  - VendorID ranges: 1000-2999 (USA), 3000-3999 (Canada), 5000-6999 (Europe)
 
-### Security Events (1,000 events)
-- Login attempts (success/failure)
-- Unauthorized access attempts
-- Geographic and department information
+### index=security (~2,000 events)
+- **Linux Secure Logs**: Authentication events
+  - Failed passwords, session tracking, invalid users
+
+### index=network (~3,000 events)
+- **Cisco WSA Squid**: Proxy logs with web usage patterns
+
+### index=games (~2,000 events)
+- **SimCube Beta**: Game telemetry with player actions and character data
 
 ### Lookup Tables
-- **users.csv**: User information (department, city, role)
-- **products.csv**: Product catalog with pricing
-- **threat_intel.csv**: Threat intelligence data
+- **http_status_lookup.csv**: HTTP status codes with descriptions
+- **product_catalog.csv**: Buttercup Games product information
 
 ## Environment Management
 
@@ -245,7 +260,12 @@ Creates all sample data files in the `data/` directory
 ### Data Generation Fails
 - Ensure Python 3.7+ is installed
 - Check Python is in system PATH
-- Run directly: `python scripts/data-generators/generate_sample_data.py`
+- Run directly: `python scripts/data-generators/generate_buttercup_data.py`
+
+### No Search Results After Upload
+- Check time range (try "All time")
+- Verify file went to correct index
+- Run verification search: `| tstats count where index=* by index, sourcetype`
 
 ### Presentation Not Loading
 - Use a local web server (Python http.server or Node.js http-server)
@@ -258,6 +278,15 @@ Creates all sample data files in the `data/` directory
 3. **Experiment** - Try variations of the exercises
 4. **Save searches** - Keep useful queries for reference
 5. **Ask questions** - Discuss with instructor or peers
+
+## Course Documentation
+
+- **QUICK_START.md**: 5-step quick setup guide
+- **DATA_LOADING_GUIDE.md**: Detailed data upload instructions for 4 indexes
+- **outline.md**: Complete 2-day course outline with all 12 labs
+- **COURSE_UPDATE_SUMMARY.md**: Summary of course structure and content
+- **LAB_UPDATE_GUIDE.md**: Lab specifications and structure
+- **QUICK_REFERENCE.md**: SPL command reference
 
 ## Additional Resources
 
@@ -281,11 +310,32 @@ This course is provided for educational purposes. Splunk is a registered tradema
 ## Support
 
 For issues with course materials:
-- Check the troubleshooting section
-- Review lab prerequisites
-- Ensure Splunk environment is running
-- Verify sample data is uploaded correctly
+- Check the troubleshooting section above
+- Review `DATA_LOADING_GUIDE.md` for data upload help
+- Ensure all 4 indexes are created (web, security, network, games)
+- Verify data is uploaded correctly: `| tstats count where index=* by index, sourcetype`
 
 ---
 
-**Ready to learn? Start with Module 1!**
+## Verify Setup
+
+After loading data, run this search to confirm all indexes have data:
+
+```spl
+| tstats count where index=* by index, sourcetype
+| sort index sourcetype
+```
+
+**Expected Results**:
+
+| index | sourcetype | count |
+|-------|------------|-------|
+| games | SimCubeBeta | ~2,000 |
+| network | cisco_wsa_squid | ~3,000 |
+| security | linux_secure | ~2,000 |
+| web | access_combined_wcookie | ~15,000 |
+| web | vendor_sales | ~5,000 |
+
+---
+
+**Ready to learn? Start with Lab 1!** 🎮

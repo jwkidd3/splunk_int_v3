@@ -1,0 +1,22 @@
+productId,product_name,categoryId,price
+WC-SH-G01,Mediocre Kingdoms,STRATEGY,39.99
+WC-SH-G02,World of Cheese,STRATEGY,24.99
+WC-SH-G03,Manganiello Bros.,STRATEGY,29.99
+WC-SH-G04,Command & Conquer,STRATEGY,49.99
+WC-SH-G05,Total War: Warhammer,STRATEGY,59.99
+SF-BUD-G01,Grand Theft Scooter,SIMULATION,44.99
+SF-BUD-G02,The Sims 5,SIMULATION,49.99
+SF-BUD-G03,Cities: Skylines,SIMULATION,29.99
+SF-BUD-G04,Flight Simulator,SIMULATION,59.99
+MB-AG-G01,Shrek Soccer,ACTION,14.99
+MB-AG-G02,Halo Infinite,ACTION,59.99
+MB-AG-G03,Call of Duty,ACTION,69.99
+MB-AG-G04,Assassin's Creed,ACTION,49.99
+FS-FGA-G01,Madden NFL,SPORTS,59.99
+FS-FGA-G02,FIFA 24,SPORTS,59.99
+FS-FGA-G03,NBA 2K24,SPORTS,59.99
+MB-AC-001,Gaming Headset,accessories,79.99
+MB-AC-002,Wireless Controller,accessories,59.99
+MB-AC-003,Gaming Keyboard,accessories,129.99
+MB-AC-004,Gaming Mouse,accessories,49.99
+MB-AC-005,Mouse Pad,accessories,19.99
