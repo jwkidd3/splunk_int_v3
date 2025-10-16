@@ -1,4 +1,24 @@
-# Data Loading Guide - Splunk Intermediate Course
+# Lab 0: Data Loading Activity
+
+**Splunk Intermediate – Lab Exercises**
+
+> **Note**: This lab must be completed before starting Lab 1. Complete this in a non-production environment.
+
+## Lab Description
+
+This lab covers:
+- Creating 4 indexes (web, security, network, games)
+- Uploading training data files to appropriate indexes
+- Uploading lookup files for data enrichment
+- Verifying data was loaded correctly
+
+## Scenario
+
+You are setting up a Splunk training environment for Buttercup Games. Before the course begins, you need to load all training data into Splunk using **4 separate indexes**.
+
+---
+
+## Overview
 
 This guide provides step-by-step instructions for loading Buttercup Games training data into Splunk using **4 separate indexes**.
 
@@ -545,11 +565,33 @@ After loading all data:
 
 ---
 
-**Data Loading Complete!** You're ready to teach or take the Splunk Intermediate course. 🎮
+---
+
+## Summary
+
+In this lab, you:
+- ✓ Created 4 indexes (web, security, network, games)
+- ✓ Uploaded web access logs (~15,000 events)
+- ✓ Uploaded vendor sales data (~5,000 events)
+- ✓ Uploaded security authentication logs (~2,000 events)
+- ✓ Uploaded network proxy logs (~3,000 events)
+- ✓ Uploaded game telemetry data (~2,000 events)
+- ✓ Uploaded 2 lookup files (http_status_lookup, product_catalog)
+- ✓ Verified all data loaded correctly (~27,000 total events)
+
+## Key Takeaways
+
+1. **Multiple indexes** organize data by type and improve search performance
+2. **Sourcetype** determines how Splunk parses and extracts fields from data
+3. **CSV files** require "Indexed Extractions = CSV" setting
+4. **Lookup files** are uploaded separately, not to indexes
+5. **Verification searches** confirm data was loaded correctly
+6. **Alternative sourcetypes** (access_combined vs access_combined_wcookie) can reference the same data
 
 ---
 
-**Last Updated**: 2025-01-15
-**Course Version**: v3
-**Indexes**: 4 (web, security, network, games)
-**Total Events**: ~27,000
+**Data Loading Complete!** You're ready to start Lab 1. 🎮
+
+---
+
+**Lab 0 Complete!**

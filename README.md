@@ -33,7 +33,7 @@ This repository contains all materials needed to deliver or take a 2-day Splunk 
 
 ## Quick Start
 
-**For complete setup instructions**, see `QUICK_START.md` or `DATA_LOADING_GUIDE.md`
+**For complete setup instructions**, see `QUICK_START.md` or `labs/lab00_data_loading.md`
 
 ### 1. Start Splunk Environment
 
@@ -79,7 +79,7 @@ Upload each file to its designated index:
 | cisco_wsa_squid.log | cisco_wsa_squid | **network** |
 | simcube_beta.csv | SimCubeBeta | **games** |
 
-**Detailed upload instructions**: See `DATA_LOADING_GUIDE.md`
+**Detailed upload instructions**: See `labs/lab00_data_loading.md`
 
 ### 5. Upload Lookup Files
 
@@ -147,7 +147,8 @@ splunk_int_v3/
 │   ├── simcube_beta.csv                       # 2,000 events → index=games
 │   ├── http_status_lookup.csv                 # Lookup table
 │   └── product_catalog.csv                    # Lookup table
-├── labs/                                      # 12 Lab exercises (Markdown)
+├── labs/                                      # 13 Lab exercises (Markdown)
+│   ├── lab00_data_loading.md                  # Data loading activity
 │   ├── lab01_beyond_search_fundamentals.md
 │   ├── lab02_transforming_commands_visualizations.md
 │   ├── lab03_trendlines_mapping_single_value.md
@@ -175,7 +176,6 @@ splunk_int_v3/
 │   └── update_course.bat
 ├── CLAUDE.md                                  # Documentation for Claude Code
 ├── COURSE_UPDATE_SUMMARY.md                   # Complete course update summary
-├── DATA_LOADING_GUIDE.md                      # Detailed data loading instructions
 ├── LAB_UPDATE_GUIDE.md                        # Lab specifications
 ├── PRESENTATION_UPDATE_NOTES.md               # Presentation update guide
 ├── QUICK_REFERENCE.md                         # SPL command reference
@@ -282,7 +282,7 @@ Creates all sample data files in the `data/` directory
 ## Course Documentation
 
 - **QUICK_START.md**: 5-step quick setup guide
-- **DATA_LOADING_GUIDE.md**: Detailed data upload instructions for 4 indexes
+- **labs/lab00_data_loading.md**: Detailed data upload instructions for 4 indexes
 - **outline.md**: Complete 2-day course outline with all 12 labs
 - **COURSE_UPDATE_SUMMARY.md**: Summary of course structure and content
 - **LAB_UPDATE_GUIDE.md**: Lab specifications and structure
@@ -311,7 +311,7 @@ This course is provided for educational purposes. Splunk is a registered tradema
 
 For issues with course materials:
 - Check the troubleshooting section above
-- Review `DATA_LOADING_GUIDE.md` for data upload help
+- Review `labs/lab00_data_loading.md` for data upload help
 - Ensure all 4 indexes are created (web, security, network, games)
 - Verify data is uploaded correctly: `| tstats count where index=* by index, sourcetype`
 

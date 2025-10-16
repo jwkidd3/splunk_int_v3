@@ -459,7 +459,7 @@ def main():
     print("   - http_status_lookup.csv")
     print("   - product_catalog.csv")
     print()
-    print("See DATA_LOADING_GUIDE.md for detailed instructions.")
+    print("See labs/lab00_data_loading.md for detailed instructions.")
     print()
 
 
