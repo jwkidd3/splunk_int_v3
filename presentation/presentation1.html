@@ -8,12 +8,48 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
     <style>
-        .reveal h1, .reveal h2, .reveal h3 { text-transform: none; }
-        .reveal pre { width: 100%; font-size: 0.55em; }
-        .reveal code { background: #3f3f3f; padding: 2px 6px; border-radius: 3px; }
-        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .highlight-box { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; margin: 20px 0; }
-        .small-text { font-size: 0.8em; }
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal pre {
+            width: 100%;
+            font-size: 0.5em;
+        }
+        .reveal code {
+            background: #3f3f3f;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .lab-callout {
+            background: #ff6b00;
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.5);
+        }
+        .lab-callout h2 {
+            margin: 0 0 20px 0;
+            font-size: 2em;
+        }
+        .lab-callout p {
+            margin: 10px 0;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
@@ -23,396 +59,369 @@
             <!-- Title Slide -->
             <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
                 <h1>Splunk Intermediate</h1>
-                <h2>Day 1: Search Fundamentals & Data Analysis</h2>
-                <p style="margin-top: 50px;">Buttercup Games E-Commerce Analytics</p>
+                <h3>Day 1: Search, Visualization & Data Enrichment</h3>
+                <p style="margin-top: 50px;">Buttercup Games Scenario</p>
             </section>
 
-            <!-- Welcome -->
+            <!-- Course Scenario -->
             <section>
-                <h2>Welcome to Day 1!</h2>
-                <div class="two-column">
-                    <div>
-                        <h3>Today's Topics</h3>
-                        <ul class="small-text">
-                            <li>Beyond Search Fundamentals</li>
-                            <li>Transforming Commands & Visualizations</li>
-                            <li>Trendlines, Mapping, Single Value</li>
-                            <li>Filtering & Manipulating Data</li>
-                            <li>Correlating Events</li>
-                            <li>Introduction to Lookups</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3>By End of Day</h3>
-                        <ul class="small-text">
-                            <li>Advanced SPL commands</li>
-                            <li>Create dashboards</li>
-                            <li>Build visualizations</li>
-                            <li>Enrich data with lookups</li>
-                            <li>Analyze user sessions</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Buttercup Games -->
-            <section>
-                <h2>About Buttercup Games</h2>
+                <h2>Buttercup Games</h2>
                 <div class="highlight-box">
-                    <p><strong>Company:</strong> Online & retail gaming company</p>
-                    <p><strong>Products:</strong> Video games, gaming accessories</p>
-                    <p><strong>Operations:</strong> E-commerce website, retail stores worldwide</p>
+                    <p><strong>E-commerce gaming company analyzing:</strong></p>
+                    <ul>
+                        <li>Web traffic (online store)</li>
+                        <li>Vendor sales (retail stores)</li>
+                        <li>Security events (authentication)</li>
+                        <li>Network proxy logs</li>
+                        <li>Game telemetry (SimCube Beta)</li>
+                    </ul>
                 </div>
-                <h3>Data Sources</h3>
-                <ul class="small-text">
-                    <li><strong>index=web</strong>: Online store traffic, vendor sales</li>
-                    <li><strong>index=security</strong>: Authentication, failed logins</li>
-                    <li><strong>index=network</strong>: Proxy logs, bandwidth usage</li>
-                    <li><strong>index=games</strong>: Game telemetry (SimCubeBeta)</li>
-                </ul>
+                <p><strong>4 Indexes:</strong> web, security, network, games</p>
             </section>
 
-            <!-- Module 1 Title -->
+            <!-- Lab 0 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 0</h2>
+                    <h3>Data Loading Activity</h3>
+                    <p><strong>Follow:</strong> DATA_LOADING_GUIDE.md</p>
+                </div>
+            </section>
+
+            <!-- Module 1: Beyond Search Fundamentals -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 1</h1>
-                <h2>Beyond Search Fundamentals</h2>
+                <h2>Module 1</h2>
+                <h3>Beyond Search Fundamentals</h3>
             </section>
 
-            <!-- Search Fundamentals Review -->
             <section>
-                <h2>Search Fundamentals Review</h2>
+                <h3>Case Sensitivity</h3>
+                <p>Field names are case-sensitive, values are not</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined_wcookie productId=*
+# Works - productId is correct
+
+index=web sourcetype=access_combined_wcookie productid=*
+# Fails - productid (lowercase) doesn't exist</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Best Practice:</strong> Always specify index and sourcetype</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Job Inspector</h3>
+                <p>Troubleshoot and optimize searches</p>
                 <div class="two-column">
                     <div>
-                        <h3>Case Sensitivity</h3>
-                        <pre><code class="language-spl"># Field names: CASE SENSITIVE
-index=web status=200  ✓
-index=web STATUS=200  ✗
-
-# Field values: case insensitive
-productId=MB-1234
-productId=mb-1234  # Same</code></pre>
+                        <h4>Access</h4>
+                        <p>Job menu → Inspect Job</p>
                     </div>
                     <div>
-                        <h3>Booleans & Wildcards</h3>
-                        <pre><code class="language-spl"># Boolean (UPPERCASE)
-status=200 OR status=201
-status=200 NOT action=view
-
-# Wildcards
-product_name="World*"
-status=40*</code></pre>
+                        <h4>Shows</h4>
+                        <ul>
+                            <li>Execution time</li>
+                            <li>Events scanned</li>
+                            <li>Command costs</li>
+                            <li>Knowledge objects used</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Search Modes -->
             <section>
-                <h2>Search Modes</h2>
-                <table class="small-text">
+                <h3>Search Modes</h3>
+                <table style="font-size: 0.7em;">
                     <tr>
                         <th>Mode</th>
-                        <th>Returns</th>
                         <th>Speed</th>
-                        <th>Best For</th>
+                        <th>Use When</th>
                     </tr>
                     <tr>
-                        <td><strong>Verbose</strong></td>
-                        <td>ALL events & fields</td>
-                        <td>Slowest</td>
-                        <td>Exploring, debugging</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Fast</strong></td>
-                        <td>Required fields only</td>
+                        <td>Fast</td>
                         <td>Fastest</td>
-                        <td>Reports, dashboards</td>
+                        <td>Statistics only, minimal fields</td>
                     </tr>
                     <tr>
-                        <td><strong>Smart</strong></td>
-                        <td>Auto-determined</td>
+                        <td>Smart</td>
                         <td>Balanced</td>
-                        <td>General searches (default)</td>
+                        <td>Default - Splunk decides</td>
+                    </tr>
+                    <tr>
+                        <td>Verbose</td>
+                        <td>Slowest</td>
+                        <td>Need all events and fields</td>
                     </tr>
                 </table>
+                <p style="margin-top: 30px;"><strong>Recommendation:</strong> Use Smart mode for most searches</p>
             </section>
 
-            <!-- Job Inspector -->
+            <!-- Lab 1 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 1</h2>
+                    <h3>Beyond Search Fundamentals</h3>
+                    <p><strong>Save tags:</strong> L1S1-L1S4, L1C1-L1C2</p>
+                </div>
+            </section>
+
+            <!-- Module 2: Transforming Commands -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 2</h2>
+                <h3>Transforming Commands for Visualizations</h3>
+            </section>
+
             <section>
-                <h2>Job Inspector</h2>
+                <h3>Chart Command</h3>
+                <p>Two-dimensional data aggregation</p>
+                <pre><code class="language-spl">index=security sourcetype=linux_secure
+| chart count over vendor_action by src_ip</code></pre>
                 <div class="highlight-box">
-                    <p><strong>Access:</strong> Search results → Job menu → Inspect Job</p>
-                    <h3>Key Metrics</h3>
-                    <ul class="small-text">
-                        <li><strong>Execution Costs:</strong> Time per component</li>
-                        <li><strong>scanCount vs resultCount:</strong> Efficiency indicator</li>
-                        <li><strong>Command Times:</strong> Identify bottlenecks</li>
-                    </ul>
-                </div>
-                <p class="small-text"><strong>Use Case:</strong> "Why is my search slow?" → Check scan vs result ratio</p>
-            </section>
-
-            <!-- Lab 1 -->
-            <section>
-                <h2>Lab 1: Beyond Search Fundamentals</h2>
-                <h3>Objectives</h3>
-                <ul>
-                    <li>Practice search fundamentals</li>
-                    <li>Use Job Inspector to analyze searches</li>
-                    <li>Compare search modes</li>
-                    <li>Format results with table command</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 30 minutes</strong></p>
-            </section>
-
-            <!-- Module 2 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 2</h1>
-                <h2>Transforming Commands for Visualizations</h2>
-            </section>
-
-            <!-- Chart Command -->
-            <section>
-                <h2>The Chart Command</h2>
-                <p>Two-dimensional analysis</p>
-                <pre><code class="language-spl"># Basic chart
-index=security sourcetype=linux_secure
-| chart count by user, vendor_action
-
-# With aggregation
-index=web sourcetype=vendor_sales
-| chart sum(price) as revenue by VendorCountry, categoryId
-
-# Limit columns
-| chart sum(price) over VendorCountry by categoryId limit=5 useother=t</code></pre>
-            </section>
-
-            <!-- Timechart Command -->
-            <section>
-                <h2>The Timechart Command</h2>
-                <p>Time-series visualizations</p>
-                <pre><code class="language-spl"># Basic timechart
-index=security "failed password"
-| timechart count
-
-# By field
-index=security "failed password"
-| timechart count by user
-
-# Multiple metrics
-index=web sourcetype=access_combined
-| timechart avg(req_time) as avg_response,
-            max(req_time) as max_response
-
-# Custom span
-| timechart span=1h count by vendor_action</code></pre>
-            </section>
-
-            <!-- Choosing Visualizations -->
-            <section>
-                <h2>Choosing the Right Chart</h2>
-                <div class="small-text">
-                    <ul>
-                        <li><strong>Column/Bar Chart:</strong> Comparing categories</li>
-                        <li><strong>Line Chart:</strong> Trends over time</li>
-                        <li><strong>Pie Chart:</strong> Proportions (< 7 slices)</li>
-                        <li><strong>Stacked Chart:</strong> Part-to-whole comparisons</li>
-                        <li><strong>Single Value:</strong> KPIs with trend indicators</li>
-                    </ul>
+                    <p><strong>Syntax:</strong> chart &lt;function&gt; over &lt;row&gt; by &lt;column&gt;</p>
+                    <p>Creates stacked or clustered visualizations</p>
                 </div>
             </section>
 
-            <!-- Lab 2 -->
             <section>
-                <h2>Lab 2: Transforming Commands</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Use chart command for analysis</li>
-                    <li>Create time-series with timechart</li>
-                    <li>Build multi-panel dashboard</li>
-                    <li>Format chart visualizations</li>
-                    <li>Implement trellis layouts</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
-            </section>
-
-            <!-- Module 3 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 3</h1>
-                <h2>Trendlines, Mapping & Single Value</h2>
-            </section>
-
-            <!-- Trendlines -->
-            <section>
-                <h2>Trendline Command</h2>
-                <p>Simple Moving Average (SMA)</p>
-                <pre><code class="language-spl"># Basic trendline
-index=security "failed password"
-| timechart count
-| trendline sma4(count) as trend
-
-# Multiple trendlines
-index=web sourcetype=access_combined
-| timechart count by status
-| trendline sma3(200) as trend_200,
-            sma3(404) as trend_404</code></pre>
-                <p class="small-text"><strong>Use Cases:</strong> Smooth noisy data, identify trends, detect anomalies</p>
-            </section>
-
-            <!-- Single Value -->
-            <section>
-                <h2>Single Value Visualizations</h2>
-                <pre><code class="language-spl"># Simple KPI
-index=web action=purchase
-| stats count as "Total Purchases"
-
-# With sparkline
-index=security "failed password"
-| timechart count
-| stats sparkline(count) as trend,
-        avg(count) as avg_failures
-
-# With comparison
-index=web status>399
-| stats count as errors
-| eval status = if(errors > 100, "High", "Normal")</code></pre>
-            </section>
-
-            <!-- Geographic Visualizations -->
-            <section>
-                <h2>Geographic Visualizations</h2>
+                <h3>Timechart Command</h3>
+                <p>Time-series specific aggregation</p>
+                <pre><code class="language-spl">index=web sourcetype=vendor_sales
+| timechart sum(price) by VendorCountry</code></pre>
                 <div class="two-column">
                     <div>
-                        <h3>Cluster Map</h3>
-                        <pre><code class="language-spl">index=security
-| iplocation src_ip
-| geostats count
-  by Country</code></pre>
+                        <h4>Features</h4>
+                        <ul>
+                            <li>Automatic time binning</li>
+                            <li>span parameter</li>
+                            <li>Perfect for trends</li>
+                        </ul>
                     </div>
                     <div>
-                        <h3>Choropleth Map</h3>
-                        <pre><code class="language-spl">index=web
-  sourcetype=vendor_sales
-  VendorCountry=USA
-| stats sum(price)
-  as revenue by
-  VendorStateProvince
-| geom geo_us_states
-  featureIdField=
-  VendorStateProvince</code></pre>
+                        <h4>Options</h4>
+                        <ul>
+                            <li>limit=N</li>
+                            <li>useother=t/f</li>
+                            <li>span=1h/1d/1w</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Lab 3 -->
             <section>
-                <h2>Lab 3: Trendlines, Mapping & Single Value</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create trendlines for security events</li>
-                    <li>Build single value KPI with sparkline</li>
-                    <li>Generate choropleth map of US sales</li>
-                    <li>Create cluster map of international sales</li>
-                    <li>Add summary totals to reports</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
+                <h3>Trellis Layouts</h3>
+                <p>Display multiple series side-by-side</p>
+                <pre><code class="language-spl">sourcetype=vendor_sales VendorCountry IN (Germany, France, Italy, Spain)
+| timechart sum(price) by VendorCountry</code></pre>
+                <p>Then: Format → Trellis Layout → Enable</p>
+                <div class="highlight-box">
+                    <p><strong>Benefits:</strong></p>
+                    <ul>
+                        <li>Reduces chart clutter</li>
+                        <li>Easy comparison across categories</li>
+                        <li>Independent y-axes available</li>
+                    </ul>
+                </div>
             </section>
 
-            <!-- Module 4 Title -->
+            <!-- Lab 2 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 2</h2>
+                    <h3>Transforming Commands for Visualizations</h3>
+                    <p><strong>Save tags:</strong> L2S1-L2S5</p>
+                </div>
+            </section>
+
+            <!-- Module 3: Trendlines, Mapping, Single Value -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 4</h1>
-                <h2>Filtering & Manipulating Data</h2>
+                <h2>Module 3</h2>
+                <h3>Trendlines, Mapping & Single Value</h3>
             </section>
 
-            <!-- Eval Command -->
             <section>
-                <h2>The Eval Command</h2>
-                <p>Creating and calculating fields</p>
-                <pre><code class="language-spl"># Unit conversion
-index=network sourcetype=cisco_wsa_squid
+                <h3>Trendline Command</h3>
+                <p>Smooth data with simple moving average (SMA)</p>
+                <pre><code class="language-spl">index=security sourcetype=linux_secure "failed password"
+| timechart count as failures
+| trendline sma4(failures) as trend</code></pre>
+                <div class="highlight-box">
+                    <p><strong>sma4</strong> = 4-period moving average</p>
+                    <p><strong>sma10</strong> = 10-period moving average (smoother)</p>
+                    <p>Helps identify long-term trends and anomalies</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Single Value Visualizations</h3>
+                <p>Executive dashboards and KPIs</p>
+                <pre><code class="language-spl">index=security sourcetype=linux_secure "failed password"
+| timechart count as failures</code></pre>
+                <p>Switch to Single Value visualization</p>
+                <div class="two-column">
+                    <div>
+                        <h4>Features</h4>
+                        <ul>
+                            <li>Sparklines</li>
+                            <li>Trend indicators</li>
+                            <li>Color thresholds</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Use Cases</h4>
+                        <ul>
+                            <li>KPI monitoring</li>
+                            <li>Executive dashboards</li>
+                            <li>Quick metrics</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Choropleth Maps</h3>
+                <p>Geographic data visualization</p>
+                <pre><code class="language-spl">sourcetype=vendor_sales VendorCountry="United States"
+| chart sum(price) as TotalSales over VendorStateProvince
+| geom geo_us_states featureIdField=VendorStateProvince</code></pre>
+                <div class="highlight-box">
+                    <p><strong>geom command:</strong> Adds geographic boundaries</p>
+                    <p>Visualize as Choropleth Map - states shaded by value</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Cluster Maps</h3>
+                <p>Show geographic distribution with clusters</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined action=purchase
+| iplocation clientip
+| geostats sum(price) as revenue by Country</code></pre>
+                <div class="highlight-box">
+                    <p><strong>iplocation:</strong> Extracts Country, City, lat, lon from IPs</p>
+                    <p><strong>geostats:</strong> Aggregates for map visualizations</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Addtotals Command</h3>
+                <p>Add summary rows and columns</p>
+                <pre><code class="language-spl">sourcetype=vendor_sales VendorCountry IN (Germany, France, Italy, Spain)
+| chart sum(price) as Revenue over product_name by VendorCountry
+| addtotals col=t row=t label="Grand Total" fieldname="Total"</code></pre>
+                <div class="two-column">
+                    <div>
+                        <p><code>col=t</code> - Column totals</p>
+                        <p><code>row=t</code> - Row totals</p>
+                    </div>
+                    <div>
+                        <p><code>label</code> - Row label</p>
+                        <p><code>fieldname</code> - Column name</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lab 3 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 3</h2>
+                    <h3>Trendlines, Mapping & Single Value</h3>
+                    <p><strong>Save tags:</strong> L3S1-L3S5</p>
+                </div>
+            </section>
+
+            <!-- Module 4: Filtering and Manipulating Data -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 4</h2>
+                <h3>Filtering & Manipulating Data</h3>
+            </section>
+
+            <section>
+                <h3>Eval Command</h3>
+                <p>Create and transform fields</p>
+                <pre><code class="language-spl">index=network sourcetype=cisco_wsa_squid
 | stats sum(sc_bytes) as total_bytes by cs_username
 | eval megabytes = round(total_bytes/(1024*1024), 2)
-
-# Calculate ratio
-index=web sourcetype=access_combined
-| stats count(eval(method="GET")) as GET,
-        count(eval(method="POST")) as POST
-| eval ratio = round(GET/POST, 2)</code></pre>
+| table cs_username megabytes
+| sort -megabytes</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Common functions:</strong> round(), len(), lower(), upper(), substr(), tostring()</p>
+                </div>
             </section>
 
-            <!-- Case Function -->
             <section>
-                <h2>Case Function</h2>
+                <h3>Case Function</h3>
                 <p>Multi-condition classification</p>
                 <pre><code class="language-spl">index=web sourcetype=access_combined
 | eval dataSize = case(
     bytes < 2000, "Small",
     bytes >= 2000 AND bytes < 5000, "Medium",
-    bytes >= 5000 AND bytes < 10000, "Large",
-    bytes >= 10000, "Very Large",
-    1=1, "Unknown"  // Default
+    bytes >= 5000, "Large",
+    1=1, "Unknown"
 )
 | stats count by dataSize</code></pre>
-                <p class="small-text"><strong>Rules:</strong> Evaluates in order, returns first match, use 1=1 for default</p>
+                <div class="highlight-box">
+                    <p><strong>1=1</strong> acts as the default/else condition</p>
+                </div>
             </section>
 
-            <!-- Search vs Where -->
             <section>
-                <h2>Search vs. Where Commands</h2>
+                <h3>Search vs Where</h3>
                 <div class="two-column">
                     <div>
-                        <h3>Search</h3>
-                        <pre><code class="language-spl">| stats avg(bytes)
-  as avg_bytes
-  by action
-| search
-  avg_bytes > 5000</code></pre>
-                        <p class="small-text">SPL syntax, wildcards</p>
+                        <h4>search command</h4>
+                        <pre><code class="language-spl">| search count > 3</code></pre>
+                        <ul>
+                            <li>Uses SPL syntax</li>
+                            <li>Supports wildcards (*)</li>
+                            <li>More intuitive</li>
+                        </ul>
                     </div>
                     <div>
-                        <h3>Where</h3>
-                        <pre><code class="language-spl">| stats avg(bytes)
-  as avg_bytes
-  by action
-| where
-  avg_bytes > 5000</code></pre>
-                        <p class="small-text">Expression syntax, LIKE, isnotnull()</p>
+                        <h4>where command</h4>
+                        <pre><code class="language-spl">| where count > 3</code></pre>
+                        <ul>
+                            <li>Expression syntax</li>
+                            <li>Supports functions</li>
+                            <li>Generally faster</li>
+                            <li>LIKE operator</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Lab 4 -->
             <section>
-                <h2>Lab 4: Filtering & Manipulating Data</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Convert bytes to megabytes</li>
-                    <li>Calculate GET/POST request ratios</li>
-                    <li>Filter results with search command</li>
-                    <li>Classify data using case function</li>
-                    <li>Use where with LIKE operator</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
+                <h3>LIKE Operator</h3>
+                <p>Pattern matching with where command</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined
+| stats count by useragent
+| where useragent LIKE "%Mobile%"
+| sort -count</code></pre>
+                <div class="highlight-box">
+                    <p><strong>%</strong> is the wildcard (like * in search)</p>
+                    <p>Only works with <code>where</code>, not <code>search</code></p>
+                </div>
             </section>
 
-            <!-- Module 5 Title -->
+            <!-- Lab 4 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 4</h2>
+                    <h3>Filtering & Manipulating Data</h3>
+                    <p><strong>Save tags:</strong> L4S1-L4S4, L4C1</p>
+                </div>
+            </section>
+
+            <!-- Module 5: Correlating Events -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 5</h1>
-                <h2>Correlating Events</h2>
+                <h2>Module 5</h2>
+                <h3>Correlating Events</h3>
             </section>
 
-            <!-- Transaction Command -->
             <section>
-                <h2>The Transaction Command</h2>
-                <p>Grouping related events</p>
-                <pre><code class="language-spl"># Basic transaction
-index=web sourcetype=access_combined_wcookie
+                <h3>Transaction Command</h3>
+                <p>Group related events into sessions</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined_wcookie
 | transaction JSESSIONID
-
-# With options
-index=web sourcetype=access_combined_wcookie
-| transaction JSESSIONID maxspan=30m maxpause=5m</code></pre>
-                <div class="highlight-box small-text">
-                    <p><strong>Generated Fields:</strong></p>
+| table JSESSIONID duration eventcount</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Auto-created fields:</strong></p>
                     <ul>
                         <li><strong>duration:</strong> Time between first and last event (seconds)</li>
                         <li><strong>eventcount:</strong> Number of events in transaction</li>
@@ -420,163 +429,205 @@ index=web sourcetype=access_combined_wcookie
                 </div>
             </section>
 
-            <!-- Transaction Parameters -->
             <section>
-                <h2>Transaction Parameters</h2>
-                <div class="small-text">
-                    <ul>
-                        <li><strong>maxspan:</strong> Maximum total duration</li>
-                        <li><strong>maxpause:</strong> Maximum gap between events</li>
-                        <li><strong>startswith/endswith:</strong> Define transaction boundaries</li>
-                        <li><strong>maxevents:</strong> Limit events per transaction</li>
-                    </ul>
-                </div>
-                <pre><code class="language-spl"># Purchase workflow
-index=web sourcetype=access_combined_wcookie
-| transaction clientip
-    startswith="action=addtocart"
-    endswith="action=purchase"</code></pre>
+                <h3>Transaction Duration Analysis</h3>
+                <p>Convert and analyze session lengths</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined_wcookie
+| transaction JSESSIONID
+| eval durationMinutes = round(duration/60, 1)
+| eval durationCategory = case(
+    durationMinutes < 1, "Quick (< 1 min)",
+    durationMinutes >= 1 AND durationMinutes < 5, "Normal (1-5 min)",
+    durationMinutes >= 5 AND durationMinutes < 10, "Long (5-10 min)",
+    durationMinutes >= 10, "Very Long (> 10 min)"
+)
+| stats count by durationCategory</code></pre>
             </section>
 
-            <!-- Lab 5 -->
             <section>
-                <h2>Lab 5: Correlating Events</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create transactions by session ID</li>
-                    <li>Calculate and analyze session duration</li>
-                    <li>Filter long-running sessions</li>
-                    <li>Track purchase workflows with startswith/endswith</li>
-                    <li>Analyze cart abandonment</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 30 minutes</strong></p>
+                <h3>Transaction Parameters</h3>
+                <table style="font-size: 0.65em;">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Purpose</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>maxspan</td>
+                        <td>Max total duration</td>
+                        <td>maxspan=30m</td>
+                    </tr>
+                    <tr>
+                        <td>maxpause</td>
+                        <td>Max time between events</td>
+                        <td>maxpause=5m</td>
+                    </tr>
+                    <tr>
+                        <td>startswith</td>
+                        <td>Transaction start condition</td>
+                        <td>startswith="action=view"</td>
+                    </tr>
+                    <tr>
+                        <td>endswith</td>
+                        <td>Transaction end condition</td>
+                        <td>endswith="action=purchase"</td>
+                    </tr>
+                </table>
             </section>
 
-            <!-- Module 6 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 6</h1>
-                <h2>Introduction to Lookups</h2>
-            </section>
-
-            <!-- Understanding Lookups -->
             <section>
-                <h2>Understanding Lookups</h2>
+                <h3>Purchase Workflow Tracking</h3>
+                <p>Analyze complete customer journeys</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined_wcookie
+| transaction clientip startswith="action=addtocart" endswith="action=purchase"
+| eval durationMinutes = round(duration/60, 1)
+| stats count as "Completed Purchases",
+        avg(durationMinutes) as "Avg Time to Purchase (min)",
+        avg(eventcount) as "Avg Events in Purchase Flow"</code></pre>
                 <div class="highlight-box">
-                    <p><strong>What are Lookups?</strong></p>
-                    <ul class="small-text">
-                        <li>CSV files containing reference data</li>
-                        <li>Enrich events with additional information</li>
-                        <li>Map codes to descriptions</li>
-                        <li>Add context from external systems</li>
-                    </ul>
+                    <p>Tracks only complete workflows from cart addition to purchase</p>
                 </div>
-                <h3 class="small-text">Common Use Cases</h3>
-                <p class="small-text">HTTP status code → Description | Product ID → Name | IP → Geo location</p>
             </section>
 
-            <!-- Lookup File Structure -->
+            <!-- Lab 5 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 5</h2>
+                    <h3>Correlating Events</h3>
+                    <p><strong>Save tags:</strong> L5S1-L5S4</p>
+                </div>
+            </section>
+
+            <!-- Module 6: Introduction to Lookups -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 6</h2>
+                <h3>Introduction to Lookups</h3>
+            </section>
+
             <section>
-                <h2>Lookup File Structure</h2>
+                <h3>What Are Lookups?</h3>
+                <div class="highlight-box">
+                    <p><strong>Add contextual information from external files</strong></p>
+                    <ul>
+                        <li>HTTP status codes → descriptions</li>
+                        <li>Product IDs → product names</li>
+                        <li>IP addresses → geolocation</li>
+                        <li>User IDs → department info</li>
+                    </ul>
+                </div>
+                <p style="margin-top: 30px;">Stored as CSV files in Splunk</p>
+            </section>
+
+            <section>
+                <h3>Creating Lookup Files</h3>
+                <p>Example: http_status_lookup.csv</p>
                 <pre><code class="language-csv">status,status_description,status_type
 200,OK,Success
-201,Created,Success
-301,Moved Permanently,Redirection
-400,Bad Request,Client Error
 404,Not Found,Client Error
 500,Internal Server Error,Server Error</code></pre>
-                <p class="small-text"><strong>Requirements:</strong> First row = headers, First column = lookup key</p>
-            </section>
-
-            <!-- Using Lookups -->
-            <section>
-                <h2>Using the Lookup Command</h2>
-                <pre><code class="language-spl"># Manual lookup
-index=web sourcetype=access_combined
-| lookup http_status_lookup.csv status
-    OUTPUT status_description status_type
-| table _time clientip status status_description status_type
-
-# Aggregate with lookup fields
-index=web sourcetype=access_combined
-| lookup http_status_lookup.csv status
-    OUTPUT status_description status_type
-| stats count by status_type
-| sort -count</code></pre>
-            </section>
-
-            <!-- Automatic Lookups -->
-            <section>
-                <h2>Automatic Lookups</h2>
                 <div class="highlight-box">
-                    <p><strong>Settings → Lookups → Automatic lookups</strong></p>
-                    <ol class="small-text">
-                        <li>Create lookup definition</li>
-                        <li>Configure automatic lookup</li>
-                        <li>Apply to sourcetype</li>
-                        <li>Specify input/output fields</li>
-                    </ol>
+                    <p><strong>Upload:</strong> Settings → Lookups → Lookup table files</p>
                 </div>
-                <p class="small-text"><strong>Benefit:</strong> No manual lookup command needed - enrichment happens automatically!</p>
             </section>
 
-            <!-- Inputlookup and Outputlookup -->
             <section>
-                <h2>Inputlookup & Outputlookup</h2>
+                <h3>Using Lookups</h3>
+                <p>Manual lookup command</p>
+                <pre><code class="language-spl">index=web sourcetype=access_combined
+| lookup http_status_lookup.csv status OUTPUT status_description status_type
+| stats count by status, status_description, status_type
+| sort status</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Syntax:</strong> lookup &lt;file&gt; &lt;input-field&gt; OUTPUT &lt;output-fields&gt;</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Automatic Lookups</h3>
+                <p>Apply lookups automatically at search time</p>
                 <div class="two-column">
                     <div>
-                        <h3>Inputlookup</h3>
-                        <pre><code class="language-spl">| inputlookup
-  http_status_lookup.csv
-| table status
-        status_description</code></pre>
-                        <p class="small-text">Read lookup file</p>
+                        <h4>Steps</h4>
+                        <ol>
+                            <li>Create lookup definition</li>
+                            <li>Create automatic lookup</li>
+                            <li>Specify sourcetype</li>
+                            <li>Map fields</li>
+                        </ol>
                     </div>
                     <div>
-                        <h3>Outputlookup</h3>
-                        <pre><code class="language-spl">index=network
-| stats sum(sc_bytes)
-  as total_bytes
-  by cs_username
-| outputlookup
-  top_users.csv</code></pre>
-                        <p class="small-text">Create/update lookup</p>
+                        <h4>Benefits</h4>
+                        <ul>
+                            <li>No manual lookup needed</li>
+                            <li>Fields always enriched</li>
+                            <li>Consistent data</li>
+                        </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Lab 6 -->
             <section>
-                <h2>Lab 6: Introduction to Lookups</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create HTTP status lookup file</li>
-                    <li>Define lookup definitions</li>
-                    <li>Configure automatic lookups</li>
-                    <li>Use lookup command manually</li>
-                    <li>Use inputlookup and outputlookup</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
+                <h3>Inputlookup & Outputlookup</h3>
+                <div class="two-column">
+                    <div>
+                        <h4>inputlookup</h4>
+                        <pre><code class="language-spl">| inputlookup http_status_lookup.csv
+| table status status_description</code></pre>
+                        <p>Read lookup as data source</p>
+                    </div>
+                    <div>
+                        <h4>outputlookup</h4>
+                        <pre><code class="language-spl">index=network sourcetype=cisco_wsa_squid
+| stats sum(sc_bytes) as total_bytes by cs_username
+| outputlookup user_bandwidth.csv</code></pre>
+                        <p>Create dynamic lookup from search results</p>
+                    </div>
+                </div>
             </section>
 
-            <!-- Day 1 Wrap-Up -->
+            <!-- Lab 6 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 6</h2>
+                    <h3>Introduction to Lookups</h3>
+                    <p><strong>Save tags:</strong> L6S1-L6S5</p>
+                </div>
+            </section>
+
+            <!-- Day 1 Summary -->
             <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
-                <h2>Day 1 Complete!</h2>
-                <h3>What We Covered</h3>
-                <ul class="small-text">
-                    <li>✓ Search fundamentals and Job Inspector</li>
-                    <li>✓ Chart and timechart visualizations</li>
-                    <li>✓ Trendlines, maps, and single value KPIs</li>
-                    <li>✓ Data manipulation with eval</li>
-                    <li>✓ Event correlation with transaction</li>
-                    <li>✓ Data enrichment with lookups</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Tomorrow:</strong> Field extractions, macros, workflow actions, data models</p>
+                <h2>Day 1 Summary</h2>
+                <div class="two-column" style="font-size: 0.8em;">
+                    <div>
+                        <h3>Skills Learned</h3>
+                        <ul>
+                            <li>Job Inspector for optimization</li>
+                            <li>Chart & timechart commands</li>
+                            <li>Trendlines & mapping</li>
+                            <li>Eval & case functions</li>
+                            <li>Transaction command</li>
+                            <li>Lookup enrichment</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Key Commands</h3>
+                        <ul>
+                            <li><code>chart</code></li>
+                            <li><code>timechart</code></li>
+                            <li><code>trendline</code></li>
+                            <li><code>geostats</code></li>
+                            <li><code>eval</code></li>
+                            <li><code>transaction</code></li>
+                            <li><code>lookup</code></li>
+                        </ul>
+                    </div>
+                </div>
             </section>
 
-            <!-- Questions -->
+            <!-- Q&A -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
                 <h1>Questions?</h1>
-                <p style="margin-top: 100px;">See you tomorrow at 9:00 AM!</p>
+                <p style="margin-top: 100px;">Tomorrow: Knowledge Objects & Data Models</p>
             </section>
 
         </div>

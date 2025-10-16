@@ -8,12 +8,48 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
     <style>
-        .reveal h1, .reveal h2, .reveal h3 { text-transform: none; }
-        .reveal pre { width: 100%; font-size: 0.55em; }
-        .reveal code { background: #3f3f3f; padding: 2px 6px; border-radius: 3px; }
-        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .highlight-box { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; margin: 20px 0; }
-        .small-text { font-size: 0.8em; }
+        .reveal h1, .reveal h2, .reveal h3 {
+            text-transform: none;
+        }
+        .reveal pre {
+            width: 100%;
+            font-size: 0.5em;
+        }
+        .reveal code {
+            background: #3f3f3f;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .highlight-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .lab-callout {
+            background: #ff6b00;
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            text-align: center;
+            margin: 50px auto;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.5);
+        }
+        .lab-callout h2 {
+            margin: 0 0 20px 0;
+            font-size: 2em;
+        }
+        .lab-callout p {
+            margin: 10px 0;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
@@ -23,689 +59,659 @@
             <!-- Title Slide -->
             <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
                 <h1>Splunk Intermediate</h1>
-                <h2>Day 2: Knowledge Objects & Data Models</h2>
-                <p style="margin-top: 50px;">Buttercup Games E-Commerce Analytics</p>
+                <h3>Day 2: Knowledge Objects & Data Models</h3>
+                <p style="margin-top: 50px;">Buttercup Games Scenario</p>
             </section>
 
-            <!-- Welcome Back -->
+            <!-- Day 2 Overview -->
             <section>
-                <h2>Welcome Back - Day 2!</h2>
+                <h2>Day 2 Topics</h2>
                 <div class="two-column">
                     <div>
-                        <h3>Yesterday's Recap</h3>
-                        <ul class="small-text">
-                            <li>✓ Search fundamentals</li>
-                            <li>✓ Visualizations</li>
-                            <li>✓ Data manipulation</li>
-                            <li>✓ Transactions</li>
-                            <li>✓ Lookups</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3>Today's Topics</h3>
-                        <ul class="small-text">
-                            <li>Creating & Managing Fields</li>
-                            <li>Field Aliases & Calculated Fields</li>
+                        <h3>Knowledge Objects</h3>
+                        <ul>
+                            <li>Field Extractions</li>
+                            <li>Field Aliases</li>
+                            <li>Calculated Fields</li>
                             <li>Tags & Event Types</li>
-                            <li>Search Macros</li>
+                            <li>Macros</li>
                             <li>Workflow Actions</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3>Data Organization</h3>
+                        <ul>
                             <li>Data Models</li>
+                            <li>Pivot Interface</li>
+                            <li>Acceleration</li>
+                            <li>Dashboards</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Module 7 Title -->
+            <!-- Module 7: Creating and Managing Fields -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 7</h1>
-                <h2>Creating & Managing Fields</h2>
+                <h2>Module 7</h2>
+                <h3>Creating and Managing Fields</h3>
             </section>
 
-            <!-- Understanding Field Extractions -->
             <section>
-                <h2>Understanding Field Extractions</h2>
-                <div class="highlight-box">
-                    <p><strong>What are Field Extractions?</strong></p>
-                    <ul class="small-text">
-                        <li>Extract fields from raw event text</li>
-                        <li>Create structured data from unstructured logs</li>
-                        <li>Applied at search time, not index time</li>
-                    </ul>
-                </div>
-                <p class="small-text"><strong>Example:</strong> Extract IP address and port from Linux secure logs</p>
-            </section>
-
-            <!-- Two Extraction Methods -->
-            <section>
-                <h2>Two Extraction Methods</h2>
+                <h3>Field Extraction Methods</h3>
                 <div class="two-column">
                     <div class="highlight-box">
-                        <h3>Regex Extraction</h3>
-                        <p class="small-text">For semi-structured text</p>
-                        <ul class="small-text">
-                            <li>Linux logs</li>
-                            <li>Syslog</li>
-                            <li>Custom app logs</li>
+                        <h4>Regular Expression</h4>
+                        <ul>
+                            <li>Unstructured data</li>
+                            <li>Pattern-based</li>
+                            <li>Example: Extract IP from logs</li>
                         </ul>
+                        <pre><code>from 192.168.1.100 port 52394</code></pre>
                     </div>
                     <div class="highlight-box">
-                        <h3>Delimiter Extraction</h3>
-                        <p class="small-text">For delimited data</p>
-                        <ul class="small-text">
-                            <li>CSV files</li>
-                            <li>TSV files</li>
-                            <li>Pipe-delimited</li>
+                        <h4>Delimiter</h4>
+                        <ul>
+                            <li>Structured data (CSV)</li>
+                            <li>Simpler to configure</li>
+                            <li>Example: Game telemetry</li>
                         </ul>
+                        <pre><code>time,src,version,user,action</code></pre>
                     </div>
                 </div>
-                <p class="small-text"><strong>Tool:</strong> Field Extractor (FX) generates patterns automatically</p>
             </section>
 
-            <!-- Field Extractor Example -->
             <section>
-                <h2>Field Extractor - Regex Method</h2>
-                <p class="small-text"><strong>Sample Event:</strong></p>
-                <pre><code class="language-text">Failed password for admin from 192.168.1.100 port 52394 ssh2</code></pre>
-                <div class="highlight-box small-text">
-                    <h3>Steps</h3>
+                <h3>Field Extractor (FX)</h3>
+                <p>UI-driven field extraction tool</p>
+                <div class="highlight-box">
+                    <h4>Steps</h4>
                     <ol>
                         <li>Event Actions → Extract Fields</li>
-                        <li>Select method: Regular Expression</li>
-                        <li>Highlight IP → Field name: src_ip</li>
-                        <li>Highlight port → Field name: port</li>
-                        <li>Validate → Save</li>
+                        <li>Choose method (regex or delimiter)</li>
+                        <li>Highlight field values or select delimiter</li>
+                        <li>Name fields</li>
+                        <li>Validate extraction</li>
+                        <li>Save (wait ~1 min for replication)</li>
                     </ol>
                 </div>
-                <p class="small-text">⏱️ <strong>Wait ~1 minute</strong> for knowledge bundle replication</p>
             </section>
 
-            <!-- Lab 7 -->
             <section>
-                <h2>Lab 7: Creating & Managing Fields</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Extract src_ip and port from linux_secure (regex)</li>
-                    <li>Extract game fields from SimCubeBeta (delimiter)</li>
-                    <li>Validate extraction accuracy</li>
-                    <li>Manage field extraction permissions</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
-            </section>
-
-            <!-- Module 8 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 8</h1>
-                <h2>Field Aliases & Calculated Fields</h2>
-            </section>
-
-            <!-- Field Aliases -->
-            <section>
-                <h2>Understanding Field Aliases</h2>
+                <h3>Regex Extraction Example</h3>
+                <p>Extract src_ip and port from linux_secure logs</p>
+                <pre><code class="language-spl">index=security sourcetype=linux_secure</code></pre>
                 <div class="highlight-box">
-                    <p><strong>The Problem:</strong> Different field names across sourcetypes</p>
-                    <ul class="small-text">
-                        <li>cisco_wsa_squid → <code>cs_username</code></li>
-                        <li>linux_secure → <code>user</code></li>
-                        <li>cisco_firewall → <code>Username</code></li>
+                    <p>Sample event: "from 192.168.1.100 port 52394"</p>
+                    <p><strong>Extraction:</strong></p>
+                    <ul>
+                        <li>Highlight "192.168.1.100" → name: <code>src</code></li>
+                        <li>Highlight "52394" → name: <code>port</code></li>
                     </ul>
-                    <p><strong>Solution:</strong> Field aliases create consistent naming</p>
-                </div>
-                <p class="small-text"><strong>Settings → Fields → Field aliases</strong></p>
-            </section>
-
-            <!-- Creating Field Aliases -->
-            <section>
-                <h2>Creating Field Aliases</h2>
-                <pre><code class="language-text"># Configuration
-Name: cisco_wsa_username_alias
-Apply to: sourcetype=cisco_wsa_squid
-Field alias: user = cs_username
-
-# Usage
-(index=network sourcetype=cisco_wsa_squid) OR
-(index=security sourcetype=linux_secure)
-| stats count by user, sourcetype
-# Now 'user' works across both sourcetypes!</code></pre>
-            </section>
-
-            <!-- Calculated Fields -->
-            <section>
-                <h2>Calculated Fields</h2>
-                <p>Automatically compute values at search time</p>
-                <div class="highlight-box small-text">
-                    <p><strong>Settings → Fields → Calculated fields</strong></p>
-                    <p><strong>Example:</strong> Convert bytes to megabytes</p>
-                </div>
-                <pre><code class="language-text">Name: cisco_wsa_megabytes
-Sourcetype: cisco_wsa_squid
-Eval: round(sc_bytes/(1024*1024), 2)
-Save as field: sc_megabytes
-
-# Result: sc_megabytes appears automatically in all searches!</code></pre>
-            </section>
-
-            <!-- When to Use Each -->
-            <section>
-                <h2>Field Aliases vs. Calculated Fields</h2>
-                <div class="two-column">
-                    <div class="highlight-box">
-                        <h3>Field Aliases</h3>
-                        <ul class="small-text">
-                            <li>Normalize field names</li>
-                            <li>No computation</li>
-                            <li>CIM compliance</li>
-                            <li>Example: user = cs_username</li>
-                        </ul>
-                    </div>
-                    <div class="highlight-box">
-                        <h3>Calculated Fields</h3>
-                        <ul class="small-text">
-                            <li>Compute new values</li>
-                            <li>Requires eval expression</li>
-                            <li>Automatic calculations</li>
-                            <li>Example: megabytes = bytes/1024/1024</li>
-                        </ul>
-                    </div>
+                    <p>Splunk generates: <code>from\s+(?&lt;src&gt;[^\s]+)\s+port\s+(?&lt;port&gt;\d+)</code></p>
                 </div>
             </section>
 
-            <!-- Lab 8 -->
             <section>
-                <h2>Lab 8: Field Aliases & Calculated Fields</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create username field aliases across sourcetypes</li>
-                    <li>Normalize usernames for unified searches</li>
-                    <li>Create calculated field for megabytes</li>
-                    <li>Create calculated fields for categorization</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
-            </section>
-
-            <!-- Module 9 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 9</h1>
-                <h2>Tags & Event Types</h2>
-            </section>
-
-            <!-- Understanding Tags -->
-            <section>
-                <h2>Understanding Tags</h2>
+                <h3>Delimiter Extraction Example</h3>
+                <p>Extract fields from SimCubeBeta game logs</p>
+                <pre><code>2024-01-15T10:30:45,192.168.50.25,v1.2.3,misc,user123,DragonSlayer,attack,warrior</code></pre>
                 <div class="highlight-box">
-                    <p><strong>What are Tags?</strong> Labels for field values</p>
-                    <p><strong>The Problem:</strong> Multiple admin user variants</p>
-                    <ul class="small-text">
-                        <li>admin, administrator, sysadmin, itmadmin, sapadmin</li>
+                    <p><strong>Select delimiter:</strong> Comma</p>
+                    <p><strong>Name fields:</strong> time, src, version, misc, user, CharacterName, action, role</p>
+                    <p>Much simpler than regex for structured data!</p>
+                </div>
+            </section>
+
+            <!-- Lab 7 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 7</h2>
+                    <h3>Creating and Managing Fields</h3>
+                    <p><strong>Save tags:</strong> L7S1-L7S3</p>
+                </div>
+            </section>
+
+            <!-- Module 8: Field Aliases and Calculated Fields -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 8</h2>
+                <h3>Field Aliases & Calculated Fields</h3>
+            </section>
+
+            <section>
+                <h3>Field Aliases</h3>
+                <p>Normalize field names across sourcetypes</p>
+                <div class="highlight-box">
+                    <p><strong>Problem:</strong> Different field names for same data</p>
+                    <ul>
+                        <li>cisco_wsa_squid: <code>cs_username</code></li>
+                        <li>linux_secure: <code>user</code></li>
+                    </ul>
+                    <p><strong>Solution:</strong> Create alias <code>user</code> = <code>cs_username</code></p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Creating Field Aliases</h3>
+                <p>Settings → Fields → Field aliases</p>
+                <pre><code>Name: cisco_wsa_username_alias
+Apply to: sourcetype=cisco_wsa_squid
+Field alias: user = cs_username</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Result:</strong> Both <code>user</code> and <code>cs_username</code> work in searches</p>
+                    <p>No data duplication - just alternate names</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Calculated Fields</h3>
+                <p>Automatically compute values using eval expressions</p>
+                <pre><code>Name: cisco_wsa_megabytes
+Apply to: sourcetype=cisco_wsa_squid
+Eval expression: round(sc_bytes/(1024*1024), 2)
+Save as field: sc_megabytes</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Benefit:</strong> Field always available, no manual eval needed</p>
+                    <p>Applied at search time automatically</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>When to Use Each</h3>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th>Use Case</th>
+                        <th>Use</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>Different names, same data</td>
+                        <td>Field Alias</td>
+                        <td>cs_username → user</td>
+                    </tr>
+                    <tr>
+                        <td>Unit conversion</td>
+                        <td>Calculated Field</td>
+                        <td>bytes → megabytes</td>
+                    </tr>
+                    <tr>
+                        <td>Data classification</td>
+                        <td>Calculated Field</td>
+                        <td>req_time → response_category</td>
+                    </tr>
+                    <tr>
+                        <td>CIM compliance</td>
+                        <td>Both</td>
+                        <td>Normalize field names & values</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Lab 8 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 8</h2>
+                    <h3>Field Aliases & Calculated Fields</h3>
+                    <p><strong>Save tags:</strong> L8S1-L8S3</p>
+                </div>
+            </section>
+
+            <!-- Module 9: Tags and Event Types -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 9</h2>
+                <h3>Tags & Event Types</h3>
+            </section>
+
+            <section>
+                <h3>Tags</h3>
+                <p>Create meaningful labels for field-value pairs</p>
+                <div class="highlight-box">
+                    <p><strong>Problem:</strong> Multiple admin user variations</p>
+                    <ul>
+                        <li>admin</li>
+                        <li>administrator</li>
+                        <li>sysadmin</li>
+                        <li>itmadmin</li>
                     </ul>
                     <p><strong>Solution:</strong> Tag all as <code>privileged_user</code></p>
                 </div>
             </section>
 
-            <!-- Creating Tags -->
             <section>
-                <h2>Creating Tags</h2>
-                <pre><code class="language-text"># Method 1: From Search Results
-1. Search: index=security user=admin
-2. Fields sidebar → Click user → Click ⋯ next to "admin"
-3. Edit Tags → Enter: privileged_user
-4. Repeat for other admin variants
-
-# Method 2: Settings → Tags
-- Add multiple field/value pairs at once</code></pre>
-            </section>
-
-            <!-- Using Tags -->
-            <section>
-                <h2>Using Tags</h2>
-                <pre><code class="language-spl"># Instead of this:
-index=security (user=admin OR user=administrator OR
-                user=sysadmin OR user=itmadmin)
-
-# Use this:
-index=security tag=privileged_user
-| stats count by user
-
-# Failed logins by privileged users
-index=security tag=privileged_user "failed password"
-| stats count by user, src_ip
-| sort -count</code></pre>
-            </section>
-
-            <!-- Event Types -->
-            <section>
-                <h2>Understanding Event Types</h2>
+                <h3>Creating Tags</h3>
+                <p>Settings → Tags → New Tag</p>
+                <pre><code>Tag Name: privileged_user
+Field/Value pairs:
+  - user = admin
+  - user = administrator
+  - user = sysadmin
+  - user = itmadmin
+  - user = sapadmin</code></pre>
                 <div class="highlight-box">
-                    <p><strong>What are Event Types?</strong></p>
-                    <ul class="small-text">
-                        <li>Save search strings as reusable objects</li>
-                        <li>Define categories of events</li>
-                        <li>Can include multiple criteria and sourcetypes</li>
-                        <li>Assigned priorities for overlapping matches</li>
-                    </ul>
+                    <p><strong>Search:</strong> <code>tag=privileged_user</code></p>
+                    <p>Simpler than: <code>user=admin OR user=administrator OR...</code></p>
                 </div>
-                <p class="small-text"><strong>Event Type vs Tag:</strong> Event Type = complex search criteria | Tag = field value labels</p>
             </section>
 
-            <!-- Creating Event Types -->
             <section>
-                <h2>Creating Event Types</h2>
-                <pre><code class="language-text"># Example: Web Error Event Type
-Name: web_error
-Search string: (sourcetype=access_combined OR
-                sourcetype=cisco_wsa_squid) status>500
+                <h3>Event Types</h3>
+                <p>Save search strings as reusable objects</p>
+                <pre><code>Name: web_error
+Search string: (sourcetype=access_combined OR sourcetype=cisco_wsa_squid) status>500
 Priority: 1 (Highest)
-Tags: error, web, server_error
-
-# Usage
-index=web eventtype=web_error
-| stats count by status, sourcetype</code></pre>
-            </section>
-
-            <!-- Lab 9 -->
-            <section>
-                <h2>Lab 9: Tags & Event Types</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create privileged_user tag for multiple values</li>
-                    <li>Tag admin user variants</li>
-                    <li>Create web_error event type</li>
-                    <li>Create authentication event types</li>
-                    <li>Search using tags and event types</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
-            </section>
-
-            <!-- Module 10 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 10</h1>
-                <h2>Creating & Using Macros</h2>
-            </section>
-
-            <!-- Understanding Macros -->
-            <section>
-                <h2>Understanding Search Macros</h2>
+Tags: error, web, server_error</code></pre>
                 <div class="highlight-box">
-                    <p><strong>What are Search Macros?</strong></p>
-                    <ul class="small-text">
-                        <li>Reusable search components</li>
-                        <li>Encapsulate complex logic</li>
-                        <li>Accept arguments for flexibility</li>
+                    <p><strong>Search:</strong> <code>eventtype=web_error</code></p>
+                    <p>Or use tags: <code>tag=error</code></p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Tags vs Event Types</h3>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th></th>
+                        <th>Tags</th>
+                        <th>Event Types</th>
+                    </tr>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Label field values</td>
+                        <td>Save search patterns</td>
+                    </tr>
+                    <tr>
+                        <td>Scope</td>
+                        <td>Single field-value</td>
+                        <td>Multiple conditions</td>
+                    </tr>
+                    <tr>
+                        <td>Example</td>
+                        <td>user=admin → privileged_user</td>
+                        <td>status>500 → web_error</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td>tag=tagname</td>
+                        <td>eventtype=typename</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Lab 9 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 9</h2>
+                    <h3>Tags & Event Types</h3>
+                    <p><strong>Save tags:</strong> L9S1-L9S4</p>
+                </div>
+            </section>
+
+            <!-- Module 10: Creating and Using Macros -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 10</h2>
+                <h3>Creating and Using Macros</h3>
+            </section>
+
+            <section>
+                <h3>What Are Macros?</h3>
+                <div class="highlight-box">
+                    <p><strong>Reusable search components</strong></p>
+                    <ul>
+                        <li>Encapsulate search logic</li>
+                        <li>Can accept arguments</li>
+                        <li>Invoked with backticks: <code>`macro_name`</code></li>
                         <li>Improve consistency and maintainability</li>
                     </ul>
                 </div>
-                <p class="small-text"><strong>Invocation:</strong> Use backticks <code>`macro_name`</code></p>
             </section>
 
-            <!-- Basic Macros -->
             <section>
-                <h2>Creating Basic Macros</h2>
-                <pre><code class="language-text"># Settings → Advanced search → Search macros
-Name: Europe_sales
-Definition: sourcetype=vendor_sales
-            VendorCountry IN (Germany, France, Italy)
-
-# Usage
-`Europe_sales`
-| stats sum(price) as revenue by product_name
-| sort -revenue</code></pre>
-            </section>
-
-            <!-- Macros with Arguments -->
-            <section>
-                <h2>Macros with Arguments</h2>
-                <pre><code class="language-text"># Currency Conversion Macro
-Name: convert_sales(3)  ← (3) = 3 arguments
-Arguments: currency, symbol, rate
-Definition:
+                <h3>Basic Macro</h3>
+                <p>Settings → Advanced Search → Search macros</p>
+                <pre><code>Name: Europe_sales
+Definition: sourcetype=vendor_sales VendorCountry IN (Germany, France, Italy)</code></pre>
+                <p><strong>Usage:</strong></p>
+                <pre><code class="language-spl">`Europe_sales`
 | stats sum(price) as USD by product_name
-| eval $currency$ = "$symbol$" +
-       tostring(round(USD*$rate$, 2), "commas")
+| sort -USD</code></pre>
+            </section>
 
-# Usage
-`Europe_sales`
+            <section>
+                <h3>Macros with Arguments</h3>
+                <p>Accept parameters for flexibility</p>
+                <pre><code>Name: convert_sales(3)
+Arguments: currency, symbol, rate
+Definition: | stats sum(price) as USD by product_name | eval $currency$="$symbol$"+tostring(round(USD*$rate$,2),"commas")</code></pre>
+                <p><strong>Usage:</strong></p>
+                <pre><code class="language-spl">sourcetype=vendor_sales VendorCountry IN (Germany, France, Italy)
 `convert_sales(euro,€,0.79)`
 | table product_name USD euro</code></pre>
             </section>
 
-            <!-- Macro Validation -->
             <section>
-                <h2>Macro Validation</h2>
-                <pre><code class="language-text"># Add validation to convert_sales(3)
-Validation Expression: isnum($rate$)
-Validation Error: Exchange rate must be numeric
-
-# Test
-`convert_sales(euro,€,0.79)`  ✓ Works
-`convert_sales(euro,€,invalid)`  ✗ Error shown</code></pre>
-                <p class="small-text"><strong>Validation Functions:</strong> isnum(), isnotnull(), match()</p>
-            </section>
-
-            <!-- Lab 10 -->
-            <section>
-                <h2>Lab 10: Creating & Using Macros</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create basic macro (Europe_sales)</li>
-                    <li>Create macro with arguments (convert_sales)</li>
-                    <li>Add validation to macros</li>
-                    <li>Test macros with different parameters</li>
-                    <li>Nest macros for complex logic</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 45 minutes</strong></p>
-            </section>
-
-            <!-- Module 11 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 11</h1>
-                <h2>Workflow Actions</h2>
-            </section>
-
-            <!-- Understanding Workflow Actions -->
-            <section>
-                <h2>Understanding Workflow Actions</h2>
-                <div class="two-column small-text">
-                    <div class="highlight-box">
-                        <h3>GET Actions</h3>
-                        <p>Open external URLs</p>
-                        <ul>
-                            <li>WHOIS lookups</li>
-                            <li>Google searches</li>
-                            <li>Threat intel portals</li>
-                        </ul>
-                    </div>
-                    <div class="highlight-box">
-                        <h3>POST Actions</h3>
-                        <p>Submit data to systems</p>
-                        <ul>
-                            <li>Create tickets</li>
-                            <li>Block IPs</li>
-                            <li>Send alerts</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="highlight-box small-text">
-                    <h3>Search Actions</h3>
-                    <p>Launch new Splunk searches</p>
+                <h3>Macro Validation</h3>
+                <p>Ensure arguments meet requirements</p>
+                <pre><code>Validation Expression: isnum($rate$)
+Validation Error Message: Exchange rate must be a numeric value</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Common validation functions:</strong></p>
                     <ul>
-                        <li>Investigate related events | Drill into user activity | Correlation searches</li>
+                        <li><code>isnum($arg$)</code></li>
+                        <li><code>isnotnull($arg$)</code></li>
+                        <li><code>match($arg$, "pattern")</code></li>
                     </ul>
                 </div>
             </section>
 
-            <!-- Creating GET Workflow Actions -->
             <section>
-                <h2>Creating GET Workflow Actions</h2>
-                <pre><code class="language-text"># WHOIS IP Lookup
-Settings → Fields → Workflow actions
+                <h3>Nested Macros</h3>
+                <p>Macros can call other macros</p>
+                <pre><code>Europe_sales: sourcetype=vendor_sales VendorCountry IN (Germany, France, Italy)
+Asia_sales: sourcetype=vendor_sales VendorCountry IN (Japan, China, South Korea)
+Americas_sales: sourcetype=vendor_sales VendorCountry IN (United States, Canada, Mexico)
 
-Name: get_whois_info
+regional_comparison: ( `Europe_sales` ) OR ( `Asia_sales` ) OR ( `Americas_sales` )</code></pre>
+                <p><strong>Usage:</strong></p>
+                <pre><code class="language-spl">`regional_comparison`
+| stats sum(price) as total_sales by VendorCountry</code></pre>
+            </section>
+
+            <!-- Lab 10 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 10</h2>
+                    <h3>Creating and Using Macros</h3>
+                    <p><strong>Save tags:</strong> L10S1-L10S3</p>
+                </div>
+            </section>
+
+            <!-- Module 11: Workflow Actions -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 11</h2>
+                <h3>Workflow Actions</h3>
+            </section>
+
+            <section>
+                <h3>Workflow Action Types</h3>
+                <div class="two-column">
+                    <div class="highlight-box">
+                        <h4>GET</h4>
+                        <p>Open external URLs</p>
+                        <p>Example: WHOIS lookup</p>
+                        <pre><code>http://who.is/whois-ip/ip-address/$src_ip$</code></pre>
+                    </div>
+                    <div class="highlight-box">
+                        <h4>POST</h4>
+                        <p>Submit data to APIs</p>
+                        <p>Example: Create ticket</p>
+                        <pre><code>priority=high&ip=$src_ip$</code></pre>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <h4>Search</h4>
+                    <p>Launch new Splunk search</p>
+                    <pre><code>index=security src_ip=$src_ip$ | stats count by user</code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h3>Creating GET Workflow Action</h3>
+                <p>Settings → Fields → Workflow actions</p>
+                <pre><code>Name: get_whois_info
 Label: Get WHOIS info for IP: $src_ip$
-Apply to field: src_ip
+Apply to: src_ip field
 Action type: link
 Link method: get
 URI: http://who.is/whois-ip/ip-address/$src_ip$
-Open in: New window
-
-# Usage: Click event → Click src_ip → Select workflow action</code></pre>
-            </section>
-
-            <!-- Creating Search Workflow Actions -->
-            <section>
-                <h2>Creating Search Workflow Actions</h2>
-                <pre><code class="language-text"># Failed Login Investigation
-Name: search_failed_login_by_ip
-Label: Search failed logins by IP: $src_ip$
-Apply to field: src_ip
-Action type: search
-Search string:
-  index=security sourcetype=linux_secure
-  "failed password" src_ip=$src_ip$
-  | stats count by user, src_ip | sort -count
-Earliest: -7d
-Latest: now
-
-# Result: Click IP → New search shows all failed logins</code></pre>
-            </section>
-
-            <!-- Lab 11 -->
-            <section>
-                <h2>Lab 11: Workflow Actions</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create GET workflow for WHOIS lookups</li>
-                    <li>Create POST workflow for ticket creation</li>
-                    <li>Create Search workflow for failed logins</li>
-                    <li>Test workflows from event data</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 30 minutes</strong></p>
-            </section>
-
-            <!-- Module 12 Title -->
-            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Module 12</h1>
-                <h2>Creating Data Models</h2>
-            </section>
-
-            <!-- Understanding Data Models -->
-            <section>
-                <h2>Understanding Data Models</h2>
+Open link in: New window</code></pre>
                 <div class="highlight-box">
-                    <p><strong>What are Data Models?</strong></p>
-                    <ul class="small-text">
-                        <li>Hierarchical representation of datasets</li>
-                        <li>Parent-child relationships</li>
-                        <li>Enable Pivot interface for non-SPL users</li>
+                    <p>Click on src_ip in any event → "Get WHOIS info" appears</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Creating Search Workflow Action</h3>
+                <p>Enable contextual investigations</p>
+                <pre><code>Name: search_failed_login_by_ip
+Label: Search failed logins by IP: $src_ip$
+Apply to: src_ip field
+Action type: search
+Search string: index=security sourcetype=linux_secure "failed password" src_ip=$src_ip$ | stats count by user, src_ip | sort -count
+Time range: Last 7 days</code></pre>
+                <div class="highlight-box">
+                    <p>One-click investigation workflows</p>
+                </div>
+            </section>
+
+            <section>
+                <h3>Workflow Action Benefits</h3>
+                <ul>
+                    <li><strong>Faster investigations:</strong> Pre-built contextual searches</li>
+                    <li><strong>External integration:</strong> Link to ticketing, WHOIS, threat intel</li>
+                    <li><strong>Consistency:</strong> Standardized investigation workflows</li>
+                    <li><strong>User-friendly:</strong> Click instead of typing searches</li>
+                    <li><strong>Multi-step workflows:</strong> Chain multiple actions</li>
+                </ul>
+            </section>
+
+            <!-- Lab 11 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 11</h2>
+                    <h3>Workflow Actions</h3>
+                    <p><strong>Save tags:</strong> L11S1-L11S3</p>
+                </div>
+            </section>
+
+            <!-- Module 12: Creating Data Models -->
+            <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
+                <h2>Module 12</h2>
+                <h3>Creating Data Models</h3>
+            </section>
+
+            <section>
+                <h3>What Are Data Models?</h3>
+                <div class="highlight-box">
+                    <p><strong>Hierarchical representation of data</strong></p>
+                    <ul>
+                        <li>Organize data into parent-child relationships</li>
+                        <li>Enable Pivot interface (no SPL required)</li>
                         <li>Can be accelerated for performance</li>
+                        <li>Standardize field definitions</li>
                     </ul>
                 </div>
-                <p class="small-text"><strong>Components:</strong> Root Event Dataset | Child Datasets | Fields (auto-extracted, eval, lookup)</p>
             </section>
 
-            <!-- Data Model Structure -->
             <section>
-                <h2>Buttercup Games Site Activity</h2>
-                <pre><code class="language-text">Data Model Structure:
-Buttercup Games Site Activity (Root)
-└── Web requests (Root Event)
+                <h3>Data Model Components</h3>
+                <div class="two-column">
+                    <div>
+                        <h4>Datasets</h4>
+                        <ul>
+                            <li><strong>Root Event:</strong> Base search</li>
+                            <li><strong>Child:</strong> Subset with constraints</li>
+                            <li><strong>Grandchild:</strong> Further refinement</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Fields</h4>
+                        <ul>
+                            <li><strong>Auto-extracted:</strong> From events</li>
+                            <li><strong>Eval:</strong> Calculated fields</li>
+                            <li><strong>Lookup:</strong> Enrichment</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Buttercup Games Data Model</h3>
+                <pre><code>Buttercup Games Site Activity
+└── Web requests (root)
     ├── Successful requests (status<400)
     │   └── purchases (action=purchase productId=*)
     └── Failed requests (status>399)
-        └── removed (action=remove productId=*)
-
-Purpose: Enable marketing team to analyze website
-         activity without knowing SPL</code></pre>
+        └── removed (action=remove productId=*)</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Root constraint:</strong> index=web sourcetype=access_combined</p>
+                </div>
             </section>
 
-            <!-- Creating Root Event Dataset -->
             <section>
-                <h2>Creating Root Event Dataset</h2>
-                <pre><code class="language-text"># Settings → Data models → New Data Model
-Title: Buttercup Games Site Activity
-ID: buttercup_games_site_activity
-
-# Add Dataset → Root Event
-Name: Web requests
-ID: web_requests
-Constraints: index=web sourcetype=access_combined
-
-# Add Auto-Extracted Fields
-action, bytes, categoryId, clientip, productId,
-product_name, req_time, status</code></pre>
+                <h3>Adding Fields to Data Model</h3>
+                <p><strong>Auto-extracted:</strong> action, bytes, status, productId, product_name, clientip</p>
+                <p><strong>Eval expression:</strong></p>
+                <pre><code>day: strftime(_time, "%m-%d %A")
+megabytes: round(bytes/(1024*1024), 2)
+response_category: case(req_time<0.1, "Fast", req_time>=0.1 AND req_time<0.5, "Normal", ...)</code></pre>
+                <p><strong>Lookup:</strong></p>
+                <pre><code>http_status_lookup: status → status_description, status_type</code></pre>
             </section>
 
-            <!-- Adding Eval Fields -->
             <section>
-                <h2>Adding Eval Expression Fields</h2>
-                <pre><code class="language-text"># Day of Week Field
-Field: day
-Eval: strftime(_time, "%m-%d %A")
-Type: String
-
-# Megabytes Field
-Field: megabytes
-Eval: round(bytes/(1024*1024), 2)
-Type: Number
-
-# Response Category
-Field: response_category
-Eval: case(
-  req_time<0.1, "Fast",
-  req_time>=0.1 AND req_time<0.5, "Normal",
-  req_time>=0.5, "Slow"
-)
-Type: String</code></pre>
-            </section>
-
-            <!-- Pivot Interface -->
-            <section>
-                <h2>Using the Pivot Interface</h2>
+                <h3>Pivot Interface</h3>
+                <p>Point-and-click reporting (no SPL needed)</p>
                 <div class="two-column">
                     <div>
-                        <h3>Configure</h3>
-                        <ul class="small-text">
+                        <h4>Configure</h4>
+                        <ul>
+                            <li>Select dataset</li>
                             <li>Split Rows</li>
                             <li>Split Columns</li>
-                            <li>Values (metrics)</li>
-                            <li>Filters</li>
+                            <li>Add Values (metrics)</li>
+                            <li>Apply Filters</li>
                         </ul>
                     </div>
                     <div>
-                        <h3>Output</h3>
-                        <ul class="small-text">
+                        <h4>Output</h4>
+                        <ul>
                             <li>Tables</li>
                             <li>Charts</li>
-                            <li>Statistics</li>
-                            <li>Trends</li>
+                            <li>Visualizations</li>
+                            <li>Save to dashboards</li>
                         </ul>
                     </div>
                 </div>
-                <p class="small-text"><strong>Point-and-click data analysis - no SPL required!</strong></p>
             </section>
 
-            <!-- Data Model Acceleration -->
             <section>
-                <h2>Data Model Acceleration</h2>
+                <h3>Pivot Example: Purchase Analysis</h3>
+                <pre><code>Dataset: purchases
+Split Rows: Product Name
+Values: Count
+Visualization: Bar Chart</code></pre>
                 <div class="highlight-box">
-                    <h3>What is Acceleration?</h3>
-                    <p class="small-text">Pre-computed summary tables for instant results</p>
-                    <ul class="small-text">
-                        <li>10-100x faster pivot reports</li>
-                        <li>Enable tstats command</li>
-                        <li>Trade storage for speed</li>
-                    </ul>
+                    <p>Result: Count of purchases by product - no SPL required!</p>
+                    <p>Perfect for non-technical users</p>
                 </div>
-                <pre><code class="language-spl">| tstats count from datamodel=buttercup_games_site_activity
-  by Web_requests.method, Web_requests.status</code></pre>
             </section>
 
-            <!-- Lab 12 -->
             <section>
-                <h2>Lab 12: Creating Data Models</h2>
-                <h3>Objectives</h3>
-                <ul class="small-text">
-                    <li>Create "Buttercup Games Site Activity" data model</li>
-                    <li>Add root, child, and grandchild datasets</li>
-                    <li>Add auto-extracted, eval, and lookup fields</li>
-                    <li>Create pivot reports</li>
-                    <li>Build dashboard from pivots</li>
-                    <li>Enable acceleration</li>
-                </ul>
-                <p style="margin-top: 40px;"><strong>Time: 60 minutes</strong></p>
+                <h3>Data Model Acceleration</h3>
+                <p>Pre-compute summary tables for faster performance</p>
+                <pre><code>Accelerate: Yes
+Acceleration Time Range: Last 7 days
+Summary Range: All time</code></pre>
+                <div class="highlight-box">
+                    <p><strong>Benefits:</strong></p>
+                    <ul>
+                        <li>Dramatically faster pivot reports</li>
+                        <li>Enable tstats command</li>
+                        <li>Reduced indexer load</li>
+                    </ul>
+                    <p><strong>Tradeoff:</strong> Uses disk space and CPU</p>
+                </div>
             </section>
 
-            <!-- Course Wrap-Up -->
+            <section>
+                <h3>Creating Dashboards from Pivot</h3>
+                <p>Build comprehensive dashboards without SPL</p>
+                <div class="highlight-box">
+                    <p><strong>Weekly Website Activity Dashboard:</strong></p>
+                    <ol>
+                        <li>Daily Purchases (Column Chart)</li>
+                        <li>Error Rate Over Time (Line Chart)</li>
+                        <li>Top 10 Products (Bar Chart)</li>
+                        <li>HTTP Status Distribution (Pie Chart)</li>
+                        <li>Overall Performance (Single Value)</li>
+                    </ol>
+                    <p>All created with Pivot → Save As → Dashboard Panel</p>
+                </div>
+            </section>
+
+            <!-- Lab 12 Callout -->
+            <section data-background-color="#ff6b00">
+                <div class="lab-callout">
+                    <h2>🔬 Lab 12</h2>
+                    <h3>Creating Data Models</h3>
+                    <p><strong>Save tags:</strong> L12S1-L12S3</p>
+                </div>
+            </section>
+
+            <!-- Course Summary -->
             <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
                 <h2>Course Summary</h2>
-                <div class="two-column small-text">
+                <div class="two-column" style="font-size: 0.75em;">
                     <div>
-                        <h3>Day 1 Skills</h3>
+                        <h3>Day 1</h3>
                         <ul>
-                            <li>✓ Search fundamentals</li>
-                            <li>✓ Visualizations</li>
-                            <li>✓ Data manipulation</li>
-                            <li>✓ Event correlation</li>
-                            <li>✓ Lookups</li>
+                            <li>Search optimization</li>
+                            <li>Chart & timechart</li>
+                            <li>Trendlines & mapping</li>
+                            <li>Eval & filtering</li>
+                            <li>Transaction command</li>
+                            <li>Lookups</li>
                         </ul>
                     </div>
                     <div>
-                        <h3>Day 2 Skills</h3>
+                        <h3>Day 2</h3>
                         <ul>
-                            <li>✓ Field extractions</li>
-                            <li>✓ Field aliases</li>
-                            <li>✓ Tags & event types</li>
-                            <li>✓ Macros</li>
-                            <li>✓ Workflow actions</li>
-                            <li>✓ Data models</li>
+                            <li>Field extractions</li>
+                            <li>Field aliases</li>
+                            <li>Calculated fields</li>
+                            <li>Tags & event types</li>
+                            <li>Macros</li>
+                            <li>Workflow actions</li>
+                            <li>Data models</li>
                         </ul>
                     </div>
                 </div>
             </section>
 
-            <!-- Key Takeaways -->
             <section>
                 <h2>Key Takeaways</h2>
-                <div class="highlight-box small-text">
-                    <h3>Knowledge Objects</h3>
-                    <ul>
-                        <li><strong>Field extractions:</strong> Structure from unstructured data</li>
-                        <li><strong>Aliases:</strong> Normalize field names</li>
-                        <li><strong>Calculated fields:</strong> Automatic computations</li>
-                        <li><strong>Tags:</strong> Categorize field values</li>
-                        <li><strong>Event types:</strong> Save complex search criteria</li>
-                        <li><strong>Macros:</strong> Reusable search components</li>
-                    </ul>
-                </div>
-                <p class="small-text">⏱️ Remember: Wait ~1 minute after creating knowledge objects for replication</p>
+                <ol style="font-size: 0.8em;">
+                    <li><strong>Knowledge objects</strong> are reusable, shareable components</li>
+                    <li><strong>Field extractions</strong> make unstructured data searchable</li>
+                    <li><strong>Field aliases</strong> normalize field names across sources</li>
+                    <li><strong>Calculated fields</strong> automate recurring calculations</li>
+                    <li><strong>Tags & event types</strong> simplify searching</li>
+                    <li><strong>Macros</strong> encapsulate reusable search logic</li>
+                    <li><strong>Workflow actions</strong> enable contextual investigations</li>
+                    <li><strong>Data models</strong> empower non-technical users</li>
+                    <li><strong>Acceleration</strong> dramatically improves performance</li>
+                    <li>All are <strong>search-time operations</strong> - no index changes</li>
+                </ol>
             </section>
 
-            <!-- Next Steps -->
             <section>
                 <h2>Next Steps</h2>
                 <div class="highlight-box">
-                    <h3>Continue Your Learning</h3>
-                    <ul class="small-text">
-                        <li>Practice with your own organizational data</li>
-                        <li>Build comprehensive dashboards</li>
-                        <li>Create knowledge objects for common tasks</li>
-                        <li>Optimize search performance</li>
-                        <li>Consider Splunk certifications</li>
-                    </ul>
-                </div>
-                <p class="small-text"><strong>Certifications:</strong> Splunk Core Certified Power User | Advanced Power User | Enterprise Admin</p>
-            </section>
-
-            <!-- Resources -->
-            <section>
-                <h2>Resources</h2>
-                <div class="small-text">
                     <ul>
-                        <li><strong>Splunk Docs:</strong> docs.splunk.com</li>
-                        <li><strong>Splunk Community:</strong> community.splunk.com</li>
-                        <li><strong>Splunk Education:</strong> education.splunk.com</li>
-                        <li><strong>Splunk Answers:</strong> answers.splunk.com</li>
+                        <li>Practice with your own data</li>
+                        <li>Create knowledge objects for your organization</li>
+                        <li>Build data models for business users</li>
+                        <li>Pursue Splunk Certifications</li>
+                        <li>Join Splunk Community</li>
+                        <li>Explore advanced courses (Security, ITSI, Architecture)</li>
                     </ul>
                 </div>
-                <div class="highlight-box small-text">
-                    <h3>Course Materials</h3>
-                    <p>Lab Files: <code>labs/</code> directory</p>
-                    <p>Data Generator: <code>scripts/data-generators/</code></p>
-                    <p>Data Loading: <code>DATA_LOADING_GUIDE.md</code></p>
-                </div>
             </section>
 
-            <!-- Thank You -->
+            <!-- Q&A -->
             <section data-background-gradient="linear-gradient(to bottom, #1c4587, #000000)">
-                <h1>Thank You!</h1>
-                <h2>Congratulations!</h2>
-                <p style="margin-top: 50px;">You've completed Splunk Intermediate Training</p>
-                <p class="small-text">You're now equipped to write advanced SPL, create dashboards, and build data models!</p>
-                <p style="margin-top: 50px;"><strong>Keep exploring and happy Splunking! 🎮</strong></p>
-            </section>
-
-            <!-- Questions -->
-            <section data-background-gradient="linear-gradient(to bottom, #000000, #1c4587)">
                 <h1>Questions?</h1>
-                <p style="margin-top: 100px;">Feedback appreciated!</p>
+                <p style="margin-top: 100px;">Thank you for attending!</p>
+                <p>Happy Splunking! 🎮</p>
             </section>
 
         </div>

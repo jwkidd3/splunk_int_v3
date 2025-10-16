@@ -46,7 +46,7 @@ Use the eval command to convert bytes to megabytes:
 ```spl
 index=network sourcetype=cisco_wsa_squid
 | stats sum(sc_bytes) as total_bytes by cs_username
-| eval megabytes = round(bytes/(1024*1024), 2)
+| eval megabytes = round(total_bytes/(1024*1024), 2)
 | table cs_username total_bytes megabytes
 | sort -megabytes
 ```

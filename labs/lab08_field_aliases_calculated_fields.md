@@ -42,13 +42,7 @@ index=security sourcetype=linux_secure
 | head 10
 ```
 
-```spl
-index=network sourcetype=cisco_firewall
-| table Username
-| head 10
-```
-
-**Expected Results**: Different field names (cs_username, user, Username) representing the same concept
+**Expected Results**: Different field names (cs_username, user) representing the same concept
 
 ### Step 1.2: Understand the Problem
 
@@ -114,46 +108,23 @@ index=network sourcetype=cisco_wsa_squid
 
 ---
 
-## Task 3: Creating Multiple Field Aliases
+## Task 3: Testing Unified Search Across Sourcetypes
 
 ### Scenario
 
-The cisco_firewall sourcetype uses "Username" (capital U) which should also map to "user" for consistency.
+Test that the field alias allows you to search across multiple sourcetypes using the common field name.
 
-### Step 3.1: Create Alias for Cisco Firewall
+### Step 3.1: Test Unified Search
 
-1. Navigate to **Settings** → **Fields** → **Field aliases**
-2. Click **New Field Alias**
-3. Configure:
-   - Destination app: **search** (or class_Fund2)
-   - Name: `cisco_firewall_username_alias`
-   - Apply to: **sourcetype: cisco_firewall**
-   - Field alias: `user` = `Username`
-4. Click **Save**
-
-### Step 3.2: Add Additional Aliases
-
-Create another alias mapping Username to cs_username for consistency:
-
-1. Click **New Field Alias**
-2. Configure:
-   - Destination app: **search**
-   - Name: `cisco_firewall_cs_username_alias`
-   - Apply to: **sourcetype: cisco_firewall**
-   - Field alias: `cs_username` = `Username`
-3. Click **Save**
-
-### Step 3.3: Test Unified Search Across Sourcetypes
-
-Now search across all sourcetypes using the common field name:
+Now search across multiple sourcetypes using the common field name:
 
 ```spl
-(index=network sourcetype=cisco_wsa_squid) OR (index=security sourcetype=linux_secure) OR (index=network sourcetype=cisco_firewall)
+(index=network sourcetype=cisco_wsa_squid) OR (index=security sourcetype=linux_secure)
 | stats count by user, sourcetype
 | sort -count
 ```
 
-**Expected Results**: All three sourcetypes now return data using the common "user" field
+**Expected Results**: Both sourcetypes now return data using the common "user" field
 
 **Save this search as**: `L8S2`
 
@@ -441,7 +412,6 @@ In this lab, you learned:
 
 - **index=network, sourcetype=cisco_wsa_squid**: Web proxy logs with cs_username and sc_bytes fields
 - **index=security, sourcetype=linux_secure**: Linux authentication logs with user field
-- **index=network, sourcetype=cisco_firewall**: Firewall logs with Username field
 - **index=web, sourcetype=access_combined**: Web access logs with method, action, and req_time fields
 - **index=web, sourcetype=access_combined_wcookie**: Web logs with duration for transaction analysis
 
