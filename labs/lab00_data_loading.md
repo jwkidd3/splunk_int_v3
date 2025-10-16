@@ -509,6 +509,89 @@ index IN (web, security, network, games)
 
 ---
 
+## Step 11: Create Required Field Extractions
+
+Some labs require specific field extractions that are not automatically created by Splunk's default sourcetypes. Create these field extractions now to ensure all labs work correctly.
+
+### Field Extraction 1: src_ip for linux_secure
+
+Extract source IP addresses from linux_secure authentication logs.
+
+**Create Field Extraction:**
+
+1. Navigate to **Settings** → **Fields** → **Field extractions**
+2. Click **New Field Extraction**
+3. Configure:
+   - **Destination app**: Select **Search & Reporting** (or your class app)
+   - **Name**: `linux_secure_src_ip`
+   - **Apply to**: Select **sourcetype** = `linux_secure`
+   - **Type**: **Inline**
+   - **Extraction/Transform**:
+     ```regex
+     (?:from|rhost=)\s*(?<src_ip>\d+\.\d+\.\d+\.\d+)
+     ```
+4. Click **Save**
+
+**Test the extraction:**
+```spl
+index=security sourcetype=linux_secure
+| stats count by src_ip
+| sort -count
+```
+
+**Expected Results**: Should show counts grouped by IP addresses like 185.125.190.9, 192.0.2.32, etc.
+
+---
+
+### Field Extraction 2: vendor_action for linux_secure
+
+Extract the action type from linux_secure authentication logs.
+
+**Create Field Extraction:**
+
+1. Navigate to **Settings** → **Fields** → **Field extractions**
+2. Click **New Field Extraction**
+3. Configure:
+   - **Destination app**: Select **Search & Reporting** (or your class app)
+   - **Name**: `linux_secure_vendor_action`
+   - **Apply to**: Select **sourcetype** = `linux_secure`
+   - **Type**: **Inline**
+   - **Extraction/Transform**:
+     ```regex
+     (?<vendor_action>session opened|Failed password|authentication failure|Invalid user)
+     ```
+4. Click **Save**
+
+**Test the extraction:**
+```spl
+index=security sourcetype=linux_secure
+| stats count by vendor_action
+| sort -count
+```
+
+**Expected Results**: Should show counts for:
+- session opened
+- Failed password
+- authentication failure
+- Invalid user
+
+---
+
+### Verify Both Field Extractions
+
+Test both fields together:
+
+```spl
+index=security sourcetype=linux_secure
+| chart count over vendor_action by src_ip
+```
+
+**Expected Results**: A table showing counts of each vendor_action grouped by source IP address
+
+> **Important**: Wait about 1 minute after creating field extractions for knowledge bundle replication to complete before running test searches.
+
+---
+
 ## Data Retention
 
 For this training course, data retention is not critical. However, if you need to reset:
