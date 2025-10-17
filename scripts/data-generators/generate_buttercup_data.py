@@ -76,9 +76,22 @@ VENDOR_REGIONS = {
     "South Africa": (9000, 9900, ["Gauteng", "Western Cape", "KwaZulu-Natal"]),
 }
 
+# Well-known IP ranges that geolocate to specific countries
+# Using major ISP and cloud provider IP blocks known to geolocate correctly
 IP_RANGES = {
     "internal": ["192.168.1.", "192.168.10.", "10.0.1.", "10.0.2."],
-    "external": ["203.0.113.", "198.51.100.", "192.0.2.", "185.125.190."]
+    "external_by_country": {
+        "USA": ["8.8.8.", "8.8.4.", "208.67.222.", "208.67.220."],  # Google DNS, OpenDNS (USA)
+        "Canada": ["104.200.131.", "104.237.151.", "142.4.213.", "142.165.26."],  # Canadian ISPs
+        "UK": ["151.101.0.", "151.101.64.", "151.101.128.", "151.101.192."],  # Fastly UK
+        "Germany": ["2.16.105.", "2.16.106.", "2.16.107.", "2.16.108."],  # Deutsche Telekom
+        "France": ["2.0.0.", "2.1.0.", "2.2.0.", "2.3.0."],  # Orange France
+        "Japan": ["202.232.0.", "202.232.1.", "202.232.2.", "202.232.3."],  # Japanese networks
+        "China": ["119.75.213.", "119.75.214.", "119.75.215.", "119.75.216."],  # China Telecom
+        "Australia": ["1.128.0.", "1.129.0.", "1.130.0.", "1.131.0."],  # Telstra Australia
+        "Brazil": ["177.12.0.", "177.13.0.", "177.14.0.", "177.15.0."],  # Brazilian ISPs
+        "South Africa": ["41.0.0.", "41.1.0.", "41.2.0.", "41.3.0."],  # South African networks
+    }
 }
 
 USER_AGENTS = [
@@ -116,8 +129,18 @@ def generate_session_id():
 
 def generate_ip(ip_type="external"):
     """Generate an IP address"""
-    prefix = random.choice(IP_RANGES[ip_type])
-    return f"{prefix}{random.randint(1, 254)}"
+    if ip_type == "internal":
+        prefix = random.choice(IP_RANGES["internal"])
+        return f"{prefix}{random.randint(1, 254)}"
+    elif ip_type == "external":
+        # Select a random country and IP prefix for geographic diversity
+        country = random.choice(list(IP_RANGES["external_by_country"].keys()))
+        prefix = random.choice(IP_RANGES["external_by_country"][country])
+        return f"{prefix}{random.randint(1, 254)}"
+    else:
+        # ip_type is a specific country
+        prefix = random.choice(IP_RANGES["external_by_country"].get(ip_type, IP_RANGES["external_by_country"]["USA"]))
+        return f"{prefix}{random.randint(1, 254)}"
 
 
 def get_random_product():

@@ -105,10 +105,11 @@ First, see all products:
 
 ```spl
 index=web sourcetype=vendor_sales
-| chart count by product_name
+| stats count by product_name
+| sort -count
 ```
 
-**Expected Results**: A chart showing all products
+**Expected Results**: A table showing all products sorted by count
 
 ### Step 3.2: Apply Limit to Show Top 5 Products
 
@@ -116,28 +117,30 @@ Now limit to the top 5 products:
 
 ```spl
 index=web sourcetype=vendor_sales
-| chart count by product_name limit=5
+| top limit=5 product_name
 ```
 
-**Expected Results**: Only the top 5 products are shown, with an "OTHER" category for the rest
+**Expected Results**: Only the top 5 products are shown with their count and percent
 
-### Step 3.3: Remove the "OTHER" Category
+### Step 3.3: Use head Command for Precise Limiting
 
-Use `useother=f` to exclude the "OTHER" category:
+Alternatively, use `head` for exact row limiting:
 
 ```spl
 index=web sourcetype=vendor_sales
-| chart count by product_name limit=5 useother=f
+| stats count by product_name
+| sort -count
+| head 5
 ```
 
-**Expected Results**: Only the top 5 products are displayed, without the "OTHER" category
+**Expected Results**: Exactly the top 5 products are displayed
 
 **Save this search as**: `L2S3`
 
 > **Note**:
-> - `limit=N` restricts the results to the top N values
-> - `useother=f` excludes the "OTHER" category from the results
-> - `useother=t` (default) includes an "OTHER" category for all remaining values
+> - `top limit=N` shows top N values with count and percentage
+> - `stats` with `sort` and `head` gives more control over output
+> - `head N` limits results to exactly N rows
 
 ---
 

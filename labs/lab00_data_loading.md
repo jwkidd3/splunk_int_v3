@@ -169,7 +169,7 @@ Retail store sales data across regions.
    - Check **Indexed Extractions**: CSV
 4. **Input Settings**:
    - **Index**: Select **web**
-5. **Review**: Verify fields like `VendorID`, `VendorCountry`, `productId`, `price`, `quantity`
+5. **Review**: Verify fields like `VendorID`, `VendorCountry`, `productId`, `product_name`, `price`, `quantity`
 6. **Submit**
 
 **Expected Result**: ~5,000 events with sourcetype=vendor_sales in index=web
@@ -357,6 +357,17 @@ index=web sourcetype=vendor_sales
 ```
 
 Should show sales by country (USA, Canada, Germany, France, etc.)
+
+**Test product_name field:**
+
+```spl
+index=web sourcetype=vendor_sales
+| stats count by product_name
+| sort -count
+| head 5
+```
+
+Should show top 5 products with counts (used in Lab 2)
 
 ### Test Security Index
 
