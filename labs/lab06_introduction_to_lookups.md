@@ -2,34 +2,17 @@
 
 **Splunk Intermediate – Lab Exercises**
 
-> **Note**: This lab should be completed in a non-production environment.
+## Objectives
 
-## Lab Description
-
-This lab covers:
-- Understanding lookup tables and their purpose
-- Using the lookup command to enrich data
-- Creating and configuring lookup definitions
-- Using automatic lookups
-- Working with CSV lookup files
-- Enriching HTTP status codes with descriptions
-- Using inputlookup and outputlookup commands
-
-## Scenario
-
-You are a Splunk administrator for Buttercup Games. The operations team receives web access logs with HTTP status codes (like 200, 404, 500) but needs human-readable descriptions. The sales team wants to enrich product IDs with product names and categories. You'll use lookups to add this contextual information to search results.
+- Create and upload CSV lookup files
+- Use lookup command to enrich data
+- Create lookup definitions
+- Configure automatic lookups
+- Use inputlookup and outputlookup commands
 
 ---
 
-## Task 1: Understanding Lookup Tables
-
-### Scenario
-
-Before creating lookups, understand what lookup tables are and how they work in Splunk.
-
-### Step 1.1: View HTTP Status Codes Without Lookups
-
-Run a search showing HTTP status codes:
+## Task 1: View Data Without Lookups
 
 ```spl
 index=web sourcetype=access_combined
@@ -37,19 +20,13 @@ index=web sourcetype=access_combined
 | sort status
 ```
 
-**Expected Results**: A table showing status codes (200, 404, 500, etc.) without descriptions
+Status codes appear without descriptions.
 
-### Step 1.2: Understand Lookup Purpose
+---
 
-Lookups allow you to:
-- Add descriptive information to codes (e.g., 404 → "Not Found")
-- Enrich IP addresses with geographic data
-- Map product IDs to product names
-- Add any external reference data to events
+## Task 2: Create Lookup File
 
-### Step 1.3: View Sample Lookup File Structure
-
-A typical HTTP status lookup CSV file looks like this:
+### Step 1: Create http_status_lookup.csv
 
 ```csv
 status,status_description,status_type
@@ -66,59 +43,25 @@ status,status_description,status_type
 503,Service Unavailable,Server Error
 ```
 
-**Key Points**:
-- First row contains field names (headers)
-- First field (status) is the lookup key
-- Additional fields provide enrichment data
+### Step 2: Upload to Splunk
 
----
+1. **Settings** → **Lookups** → **Lookup table files**
+2. **New Lookup Table File**
+3. Upload `http_status_lookup.csv`
 
-## Task 2: Creating a Lookup File
-
-### Scenario
-
-Create a lookup file to map HTTP status codes to descriptions.
-
-### Step 2.1: Create HTTP Status Lookup File
-
-1. Navigate to **Settings** → **Lookups** → **Lookup table files**
-2. Click **New Lookup Table File**
-3. Configure:
-   - Destination app: **Search & Reporting** (or your class app)
-   - Upload file: Create a CSV file named `http_status_lookup.csv` with the content above
-4. Click **Save**
-
-Alternatively, if the file already exists in `$SPLUNK_HOME/etc/apps/search/lookups/`, you can reference it directly.
-
-### Step 2.2: Verify Lookup File Contents
-
-Use inputlookup to view the lookup table:
+### Step 3: Verify Contents
 
 ```spl
 | inputlookup http_status_lookup.csv
 ```
 
-**Expected Results**: All rows from the lookup table are displayed
-
-**Save this search as**: `L6S1`
-
-> **Note**: The inputlookup command:
-> - Reads data from a lookup file
-> - Can be used as a data source (starts with pipe |)
-> - Useful for verifying lookup content
-> - Returns lookup data as search results
+**Save as**: `L6S1`
 
 ---
 
-## Task 3: Using the Lookup Command
+## Task 3: Use Lookup Command
 
-### Scenario
-
-Manually enrich web access logs with status code descriptions using the lookup command.
-
-### Step 3.1: Perform Basic Lookup
-
-Use the lookup command to add descriptions:
+### Step 1: Basic Lookup
 
 ```spl
 index=web sourcetype=access_combined
@@ -126,11 +69,7 @@ index=web sourcetype=access_combined
 | table _time clientip status status_description status_type
 ```
 
-**Expected Results**: Web events now include status_description and status_type fields
-
-### Step 3.2: Aggregate with Lookup Fields
-
-Create statistics using the enriched data:
+### Step 2: Aggregate
 
 ```spl
 index=web sourcetype=access_combined
@@ -139,11 +78,7 @@ index=web sourcetype=access_combined
 | sort status
 ```
 
-**Expected Results**: Count of events by status code with descriptions
-
-### Step 3.3: Filter Using Lookup Fields
-
-Filter results based on lookup fields:
+### Step 3: Filter Using Lookup Fields
 
 ```spl
 index=web sourcetype=access_combined
@@ -153,60 +88,44 @@ index=web sourcetype=access_combined
 | sort -count
 ```
 
-**Expected Results**: Only error status codes (4xx and 5xx) with their counts
-
-**Save this search as**: `L6S2`
-
-> **Tip**: The lookup command syntax:
-> - `lookup <lookup-file> <input-field> OUTPUT <output-field1> <output-field2>`
-> - Must specify which fields to retrieve from the lookup
-> - Can lookup multiple fields at once
+**Save as**: `L6S2`
 
 ---
 
-## Task 4: Creating an Automatic Lookup
+## Task 4: Automatic Lookup
 
-### Scenario
+### Step 1: Create Lookup Definition
 
-Configure an automatic lookup so that status descriptions are always added without manually using the lookup command.
-
-### Step 4.1: Create Lookup Definition
-
-1. Navigate to **Settings** → **Lookups** → **Lookup definitions**
-2. Click **New Lookup Definition**
+1. **Settings** → **Lookups** → **Lookup definitions**
+2. **New Lookup Definition**
 3. Configure:
-   - Destination app: **Search & Reporting** (or your class app)
    - Name: `http_status_lookup`
-   - Type: **File-based**
+   - Type: File-based
    - Lookup file: `http_status_lookup.csv`
-4. Click **Save**
 
-### Step 4.2: Configure Automatic Lookup
+### Step 2: Configure Automatic Lookup
 
-1. Navigate to **Settings** → **Lookups** → **Automatic lookups**
-2. Click **New Automatic Lookup**
+1. **Settings** → **Lookups** → **Automatic lookups**
+2. **New Automatic Lookup**
 3. Configure:
-   - Destination app: **Search & Reporting** (or your class app)
    - Name: `auto_http_status_lookup`
    - Lookup table: `http_status_lookup`
-   - Apply to: **sourcetype**
-   - Named: `access_combined`
-   - Lookup input fields: `status`
-   - Lookup output fields: `status_description, status_type`
-4. Click **Save**
+   - Apply to sourcetype: `access_combined`
+   - Lookup input: `status`
+   - Lookup output: `status_description, status_type`
 
-### Step 4.3: Test Automatic Lookup
+### Step 3: Test
 
-Now search without the lookup command:
+Wait ~1 minute, then:
 
 ```spl
 index=web sourcetype=access_combined
 | table _time status status_description status_type
 ```
 
-**Expected Results**: The status_description and status_type fields are automatically populated
+Fields appear automatically without lookup command.
 
-### Step 4.4: Verify Automatic Lookup is Working
+### Step 4: Verify
 
 ```spl
 index=web sourcetype=access_combined
@@ -214,27 +133,13 @@ index=web sourcetype=access_combined
 | sort -count
 ```
 
-**Expected Results**: Statistics by status description without manually calling the lookup command
-
-**Save this search as**: `L6S3`
-
-> **Note**: Automatic lookups:
-> - Apply lookups automatically to specified sourcetypes or sources
-> - Eliminate the need for manual lookup commands
-> - Run at search time, not index time
-> - Can impact search performance if overused
+**Save as**: `L6S3`
 
 ---
 
-## Task 5: Creating Product Lookup
+## Task 5: Product Lookup
 
-### Scenario
-
-Create a lookup to enrich product IDs with product names and categories.
-
-### Step 5.1: Create Product Lookup File
-
-Create a CSV file named `product_lookup.csv`:
+### Step 1: Create product_lookup.csv
 
 ```csv
 productId,product_name,category
@@ -248,24 +153,12 @@ DB-6789,Dragon Battle,STRATEGY
 SF-1357,Super Fighter,ACTION
 ```
 
-Upload this file to Splunk:
-1. Navigate to **Settings** → **Lookups** → **Lookup table files**
-2. Click **New Lookup Table File**
-3. Upload `product_lookup.csv`
+### Step 2: Upload and Define
 
-### Step 5.2: Create Product Lookup Definition
+1. Upload via **Settings** → **Lookups** → **Lookup table files**
+2. Create definition: `product_lookup`
 
-1. Navigate to **Settings** → **Lookups** → **Lookup definitions**
-2. Click **New Lookup Definition**
-3. Configure:
-   - Name: `product_lookup`
-   - Type: **File-based**
-   - Lookup file: `product_lookup.csv`
-4. Click **Save**
-
-### Step 5.3: Use Product Lookup
-
-Enrich purchase data with product information:
+### Step 3: Use in Search
 
 ```spl
 index=web sourcetype=access_combined action=purchase productId=*
@@ -274,21 +167,13 @@ index=web sourcetype=access_combined action=purchase productId=*
 | sort -revenue
 ```
 
-**Expected Results**: Purchase data enriched with product names and categories
-
-**Save this search as**: `L6S4`
+**Save as**: `L6S4`
 
 ---
 
-## Task 6: Using Outputlookup
+## Task 6: Outputlookup
 
-### Scenario
-
-Create a dynamic lookup table by outputting search results to a lookup file.
-
-### Step 6.1: Generate Top Users Lookup
-
-Create a lookup of top users by bandwidth:
+### Step 1: Create Dynamic Lookup
 
 ```spl
 index=network sourcetype=cisco_wsa_squid
@@ -298,21 +183,13 @@ index=network sourcetype=cisco_wsa_squid
 | outputlookup top_users_by_bandwidth.csv
 ```
 
-**Expected Results**: Creates a new lookup file with the top 10 users
-
-### Step 6.2: Verify the Created Lookup
-
-View the created lookup:
+### Step 2: Verify
 
 ```spl
 | inputlookup top_users_by_bandwidth.csv
 ```
 
-**Expected Results**: Displays the top 10 users with their bandwidth usage
-
-### Step 6.3: Use the Dynamic Lookup
-
-Use the generated lookup in another search:
+### Step 3: Use Dynamic Lookup
 
 ```spl
 index=network sourcetype=cisco_wsa_squid
@@ -321,99 +198,27 @@ index=network sourcetype=cisco_wsa_squid
 | stats sum(sc_bytes) as current_usage, max(baseline_usage) as baseline by cs_username
 ```
 
-**Expected Results**: Compares current usage to baseline for top users
-
-**Save this search as**: `L6S5`
-
-> **Note**: outputlookup command:
-> - Creates or updates a lookup file from search results
-> - Useful for creating dynamic reference tables
-> - Can be scheduled to update lookups regularly
-> - Use `create_empty=false` to prevent creating empty files
+**Save as**: `L6S5`
 
 ---
 
-## Challenge Exercise (Optional)
+## Challenge: Vendor Region Lookup
 
-### Challenge 1: Create Vendor Region Lookup
+Create lookup mapping VendorID ranges to regions and aggregate sales by region.
 
-Create a lookup that maps VendorID ranges to regions:
-
-1. Create `vendor_region_lookup.csv`:
-```csv
-vendor_id_min,vendor_id_max,region
-1000,2999,USA
-3000,3999,Canada
-4000,4999,Latin America
-5000,6999,Europe
-7000,8999,Asia Pacific
-9000,9900,Africa
-9901,9999,Other
-```
-
-2. Create a search that:
-   - Reads vendor_sales data
-   - Uses eval to match VendorID to the correct region
-   - Aggregates sales by region
-   - Creates a choropleth map of sales by region
-
-**Hint**: Use eval with case() to match VendorID ranges
-
-**Save this search as**: `L6C1`
-
-### Challenge 2: Create and Maintain User Activity Lookup
-
-Create an automated lookup maintenance system:
-
-1. Create a scheduled search that runs every hour
-2. Identifies users with suspicious activity (high failed login count)
-3. Outputs to a lookup file: `suspicious_users.csv`
-4. Create alerts that check if current authentication attempts match suspicious users
-
-**Requirements**:
-- Schedule: Every hour
-- Threshold: More than 5 failed logins
-- Output: username, failed_count, last_seen
-- Create an alert that triggers when a suspicious user attempts login
-
-**Save this search as**: `L6C2`
+**Save as**: `L6C1`
 
 ---
 
 ## Summary
 
-In this lab, you learned:
-- ✓ What lookups are and why they're useful for data enrichment
-- ✓ How to create and upload lookup files in CSV format
-- ✓ How to use the lookup command to manually enrich data
-- ✓ How to create lookup definitions for reusable lookups
-- ✓ How to configure automatic lookups for specific sourcetypes
-- ✓ How to use inputlookup to view lookup contents
-- ✓ How to use outputlookup to create dynamic lookup tables
-
-## Key Takeaways
-
-1. **Lookups** add contextual information from external files to your events
-2. **CSV files** are the most common format for lookup tables
-3. **Lookup definitions** make lookup files reusable across searches
-4. **Automatic lookups** apply enrichment automatically at search time
-5. **inputlookup** reads lookup data as search results
-6. **outputlookup** creates or updates lookup files from search results
-7. **Lookup syntax**: `lookup <lookup-name> <input-field> OUTPUT <output-fields>`
-8. Automatic lookups eliminate repetitive lookup commands but can impact performance
-
----
-
-## Data Sources Used
-
-- **index=web, sourcetype=access_combined**: Web access logs with HTTP status codes
-- **index=web, sourcetype=access_combined_wcookie**: Web logs with productId for product lookup enrichment
-- **index=network, sourcetype=cisco_wsa_squid**: Web proxy logs with cs_username and sc_bytes
-- **index=web, sourcetype=vendor_sales**: Retail sales data with VendorID for region mapping
-
-## Next Steps
-
-In Lab 7, you'll learn to create and manage custom field extractions using the Field Extractor, allowing you to extract structured data from unstructured log events.
+- Lookups add external data to events
+- CSV files are common lookup format
+- Lookup definitions make files reusable
+- Automatic lookups apply enrichment automatically
+- inputlookup reads lookup data as results
+- outputlookup creates/updates lookup files
+- Syntax: `lookup <name> <input-field> OUTPUT <output-fields>`
 
 ---
 
